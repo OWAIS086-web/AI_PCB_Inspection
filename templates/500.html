@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visionrd  Inspection</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+<style>
+    .ad {
+        margin-top: 200px;
+
+    }
+    
+   
+
+
+    .button {
+        background-color: #ff4d4d;
+        border: none;
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #e60000;
+    }
+
+</style>
+</head>
+
+<body>
+    <div id="popup" class="popup">
+        <span class="close-btn">&times;</span>
+        <div id="popup-message"></div>
+    </div>
+    <div id="popup" class="popup">
+        <span class="close-btn">&times;</span>
+        <div id="popup-message"></div>
+    </div>
+    <div class="main-container">
+        <div class="side-navigation">
+          <div class="group"></div>
+          <button class="navigation-analytics" onclick="window.location.href='{{ url_for('index') }}'">
+            <div class="d-cube"></div>
+        </button>
+        
+          <button class="navigation-analytics-1" onclick="window.location.href='{{ url_for('setting') }}'">
+            <div class="settings-gear"></div>
+          </button>
+          <button class="navigation-analytics-2" onclick="window.location.href='{{ url_for('logout') }}'" ><div class="subtract"></div></button>
+            
+        </div>
+
+
+        <div class="ad">
+            <h1>500 Internal Server Error</h1>
+            <p>Oops! Something went wrong on our end.</p>
+            <p>We apologize for the inconvenience. Our team has been notified and we're working to fix the problem.</p>
+            
+            <a class="button" href="{{ url_for('index') }}">Go to Homepage</a>
+        </div>
+
+        </body>
+</html>
+
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2878192</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-08-21 07:26:11.888128+00:00</created>
+      <updated>2025-08-21 07:49:37.183547+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2880072</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2878192</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>faisal01</username>
+        <email>faisalriaz2300@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#208080</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>points</name>
+          <color>#3464f3</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-08-21 07:49:41.751546+00:00</dumped>
+  </meta>
+<image id="0" name="cfd_rect.bmp" width="5472" height="3648">
+  <box label="landmark" source="manual" occluded="0" xtl="3286.30" ytl="1278.10" xbr="3385.20" ybr="1652.70" z_order="0"> </box>
+  <box label="landmark" source="manual" occluded="0" xtl="1965.40" ytl="2425.00" xbr="2212.00" ybr="3093.50" z_order="0"> </box>
+  <box label="landmark" source="manual" occluded="0" xtl="2736.30" ytl="1044.80" xbr="2946.30" ybr="1416.80" z_order="0"> </box>
+  <box label="landmark" source="manual" occluded="0" xtl="1939.50" ytl="570.80" xbr="2141.60" ybr="785.10" z_order="0"> </box>
+  <box label="landmark" source="manual" occluded="0" xtl="1940.70" ytl="3094.70" xbr="2142.20" ybr="3309.70" z_order="0"> </box>
+  <box label="landmark" source="manual" occluded="0" xtl="1977.20" ytl="900.00" xbr="2265.00" ybr="1222.40" z_order="0"> </box>
+  <polygon label="points" source="manual" occluded="0" points="1899.70,3392.40;1894.10,272.30;3117.80,272.60;3371.20,628.90;3372.70,857.60;3437.10,856.40;3435.20,2877.80;3367.80,2879.80;3366.20,3099.30;3161.70,3389.90" z_order="0"> </polygon>
+</image>
+</annotations>

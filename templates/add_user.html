@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #000000, #63676e);
+            color: #fff;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .form-box {
+            background-color: #121212;
+            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+
+        .form-box h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .input-field::placeholder {
+            color: #aaa;
+        }
+
+        .submit-btn {
+            background: linear-gradient(145deg, #2b323a, #1c1f25);
+            color: white;
+            padding: 15px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 8px 8px 20px rgba(255, 255, 255, 0.4), 
+                        -5px -5px 20px rgb(255, 255, 255);
+        }
+
+        label {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 5px;
+            text-align: left;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="form-box">
+            <h1>Add New User</h1>
+
+            <!-- Profile Image Preview -->
+            <img id="profile-image-preview" class="profile-image" alt="Profile Image">
+
+            <form method="POST" enctype="multipart/form-data">
+                <label>Username:</label>
+                <input type="text" name="username" class="input-field" required>
+                
+                <label>Password:</label>
+                <input type="password" name="password" class="input-field" required>
+                
+                <label>Name:</label>
+                <input type="text" name="name" class="input-field">
+                
+                <label>Phone:</label>
+                <input type="text" name="phone" class="input-field">
+                
+                <label>Worker Type:</label>
+                <input type="text" name="worker_type" class="input-field">
+                
+                <label>Profile Image:</label>
+                <input type="file" name="profile_image" class="input-field" id="profile-image-input" onchange="previewImage()">
+                
+                <button type="submit" class="submit-btn">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript function to preview the selected image
+        function previewImage() {
+            const fileInput = document.getElementById('profile-image-input');
+            const file = fileInput.files[0]; // Get the selected file
+
+            if (file) {
+                const reader = new FileReader(); // Create a FileReader object
+
+                reader.onload = function(e) {
+                    const imagePreview = document.getElementById('profile-image-preview');
+                    imagePreview.src = e.target.result; // Set the image source to the selected file
+                    imagePreview.style.display = 'block'; // Make the image visible
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL (base64 encoded string)
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+{
+    "Q": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text",
+            "leg"
+        ],
+        "group_components": [
+            "Q2",
+            "Q4",
+            "Q3",
+            "Q5"
+        ],
+        "orientation_options": [
+            0,
+            90
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "IC is upwards",
+            "Not short",
+            "Not Missing"
+        ]
+    },
+    "R": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "R47",
+            "R49",
+            "R54",
+            "R52",
+            "R41",
+            "R43",
+            "R35",
+            "R36",
+            "R37",
+            "R53",
+            "R48",
+            "R9",
+            "R1",
+            "R4",
+            "R2",
+            "R3",
+            "R10",
+            "R21",
+            "R14",
+            "R15",
+            "R11",
+            "R31",
+            "R30",
+            "R29",
+            "R5",
+            "R8",
+            "R18",
+            "R16",
+            "R12",
+            "R13",
+            "R24",
+            "R28",
+            "R26",
+            "R56",
+            "R55",
+            "R23",
+            "R17",
+            "R19",
+            "R6",
+            "R7",
+            "R39",
+            "R51",
+            "R46",
+            "R33",
+            "R20",
+            "R22",
+            "R40",
+            "R42",
+            "R32",
+            "R44",
+            "R45"
+        ],
+        "orientation_options": [
+            0,
+            90
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "Missing",
+            "Not Missing",
+            "Ignore",
+            "Not an IC"
+        ]
+    },
+    "RS": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "RS1"
+        ],
+        "orientation_options": [
+            0
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "Not Missing",
+            "Ignore",
+            "Not an IC"
+        ]
+    },
+    "C": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "C11",
+            "C15",
+            "C22",
+            "C37",
+            "C3",
+            "C8",
+            "C12",
+            "C1",
+            "C13",
+            "C9",
+            "C10",
+            "C2",
+            "C38",
+            "C40",
+            "C19",
+            "C21",
+            "C23",
+            "C17",
+            "C39"
+        ],
+        "orientation_options": [
+            0,
+            90
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "YELLOW",
+            "WHITE",
+            "Missing",
+            "Not Missing",
+            "Brown",
+            "Ignore",
+            "Not an IC"
+        ]
+    },
+    "Y": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "Y1"
+        ],
+        "orientation_options": [
+            0
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "Not Missing",
+            "Ignore",
+            "Not an IC"
+        ]
+    },
+    "U": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text",
+            "left_leg",
+            "right_leg"
+        ],
+        "group_components": [
+            "U4",
+            "U1",
+            "U2",
+            "U3"
+        ],
+        "orientation_options": [
+            0,
+            90
+        ],
+        "label_options": [
+            "IC is downwards",
+            "Not Shifted",
+            "Not_Capacitor",
+            "IC is upwards",
+            "Not short",
+            "Not Missing"
+        ]
+    },
+    "L": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "L4",
+            "L5"
+        ],
+        "orientation_options": [
+            0
+        ],
+        "label_options": [
+            "Not Shifted",
+            "WHITE",
+            "Not Missing",
+            "Ignore",
+            "Not an IC"
+        ]
+    },
+    "D": {
+        "to_label": [
+            "key",
+            "value",
+            "ocr_text"
+        ],
+        "group_components": [
+            "D1",
+            "D5",
+            "D4"
+        ],
+        "orientation_options": [
+            0,
+            90
+        ],
+        "label_options": [
+            "Not Shifted",
+            "Not_Capacitor",
+            "Not Missing",
+            "Ignore",
+            "Not an IC"
+        ]
+    }
+}

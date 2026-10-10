@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>1986463</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-01-28 09:08:51.006905+00:00</created>
+      <updated>2025-01-28 09:10:27.977643+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>1988941</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/1986463</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>osama50</username>
+        <email>osama.amjad@visionrdai.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>pcb_holes</name>
+          <color>#ff6037</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-01-28 09:12:12.822810+00:00</dumped>
+  </meta>
+  <image id="0" name="output_screenshot_28.01.2025.png" width="1280" height="720">
+    <box label="pcb_holes" source="manual" occluded="0" xtl="304.55" ytl="98.06" xbr="379.38" ybr="161.58" z_order="0">
+    </box>
+    <box label="pcb_holes" source="manual" occluded="0" xtl="941.51" ytl="98.52" xbr="1016.34" ybr="162.04" z_order="0">
+    </box>
+    <box label="pcb_holes" source="manual" occluded="0" xtl="896.26" ytl="283.86" xbr="971.09" ybr="347.38" z_order="0">
+    </box>
+    <box label="pcb_holes" source="manual" occluded="0" xtl="942.38" ytl="631.92" xbr="1017.21" ybr="695.44" z_order="0">
+    </box>
+    <box label="pcb_holes" source="manual" occluded="0" xtl="375.91" ytl="479.65" xbr="450.74" ybr="543.17" z_order="0">
+    </box>
+    <box label="pcb_holes" source="manual" occluded="0" xtl="307.16" ytl="636.27" xbr="382.00" ybr="699.80" z_order="0">
+    </box>
+  </image>
+</annotations>

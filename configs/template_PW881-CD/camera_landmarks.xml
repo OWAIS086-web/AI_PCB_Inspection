@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2370736</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-04-21 10:32:51.683970+00:00</created>
+      <updated>2025-04-23 11:28:57.064480+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2373049</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2370736</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>osama50</username>
+        <email>osama.amjad@visionrdai.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>points</name>
+          <color>#3464f3</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-04-23 11:29:02.431662+00:00</dumped>
+  </meta>
+  <image id="0" name="PW881-CD.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1169.53" ytl="271.10" xbr="1441.03" ybr="536.31" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3693.40" ytl="257.30" xbr="3998.80" ybr="550.10" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3673.97" ytl="2789.23" xbr="3979.37" ybr="3082.02" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="782.10" ytl="695.50" xbr="1290.20" ybr="1221.80" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="752.00" ytl="2214.00" xbr="985.00" ybr="2402.00" z_order="0">
+    </box>
+    <polygon label="points" source="manual" occluded="0" points="1210.76,152.76;1103.45,271.09;938.99,473.67;783.55,709.34;709.34,880.82;631.11,1096.43;606.04,1397.29;611.06,2085.24;643.15,2276.79;726.38,2477.35;800.59,2635.80;942.00,2858.44;1067.35,3014.88;1165.63,3124.19;1256.89,3200.41;1365.20,3289.66;1477.52,3367.88;1556.74,3421.03;1633.96,3471.18;3475.19,3479.20;3606.56,3417.02;3815.15,3278.63;3968.59,3145.25;4082.91,3031.93;4206.26,2882.50;4336.63,2685.95;4420.87,2525.49;4514.14,2298.85;4524.16,2256.73;4544.22,2053.15;4545.22,1862.61;4546.23,1504.59;4555.25,1226.80;4531.18,1099.44;4409.84,779.54;4276.46,549.88;4140.07,370.37;3992.66,204.90;3928.47,153.76" z_order="0">
+    </polygon>
+  </image>
+</annotations>

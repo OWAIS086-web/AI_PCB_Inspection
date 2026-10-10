@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2370736</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-04-21 10:32:51.683970+00:00</created>
+      <updated>2025-04-21 10:34:44.888999+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2373049</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2370736</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>osama50</username>
+        <email>osama.amjad@visionrdai.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-04-21 10:34:53.251749+00:00</dumped>
+  </meta>
+  <image id="0" name="PW881-CD.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1169.53" ytl="271.10" xbr="1441.03" ybr="536.31" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3693.40" ytl="257.30" xbr="3998.80" ybr="550.10" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3673.97" ytl="2789.23" xbr="3979.37" ybr="3082.02" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="782.10" ytl="695.50" xbr="1290.20" ybr="1221.80" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="752.00" ytl="2214.00" xbr="985.00" ybr="2402.00" z_order="0">
+    </box>
+  </image>
+</annotations>

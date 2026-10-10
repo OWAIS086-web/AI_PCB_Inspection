@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2151243</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-02-21 11:16:27.256543+00:00</created>
+      <updated>2025-02-21 11:25:04.607899+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2153682</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2151243</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>uzair43</username>
+        <email>uzair.arkon@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>component</name>
+          <color>#6ba4dd</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-02-21 11:25:11.058676+00:00</dumped>
+  </meta>
+  <image id="0" name="west_lu.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1434.59" ytl="486.25" xbr="1699.14" ybr="732.43" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3880.58" ytl="512.70" xbr="4152.47" ybr="775.42" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3874.75" ytl="2949.90" xbr="4130.97" ybr="3210.38" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="1408.76" ytl="2943.59" xbr="1684.33" ybr="3219.16" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="4137.72" ytl="2519.64" xbr="4414.82" ybr="2684.99" z_order="0">
+    </box>
+  </image>
+</annotations>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2151257</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-02-21 11:26:43.165372+00:00</created>
+      <updated>2025-02-21 11:31:16.365265+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2153697</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2151257</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>uzair43</username>
+        <email>uzair.arkon@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>component</name>
+          <color>#6ba4dd</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-02-21 11:31:24.699530+00:00</dumped>
+  </meta>
+  <image id="0" name="red.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1215.55" ytl="1004.40" xbr="1417.11" ybr="1199.31" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3680.78" ytl="679.76" xbr="3867.57" ybr="869.51" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="4245.19" ytl="3279.85" xbr="4395.42" ybr="3430.08" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="1087.87" ytl="3332.43" xbr="1279.24" ybr="3522.74" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="741.21" ytl="1713.21" xbr="929.00" ybr="1886.86" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="4173.21" ytl="2015.19" xbr="4332.66" ybr="2129.01" z_order="0">
+    </box>
+  </image>
+</annotations>

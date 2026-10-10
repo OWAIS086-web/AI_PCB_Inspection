@@ -1,0 +1,952 @@
+{
+    "R33": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Q2": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R13": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R12": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R18": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R16": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R5": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R8": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R24": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R28": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C12": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R56": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R55": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "U2": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R26": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R11": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R15": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R14": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R29": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R30": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R31": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "U1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D4": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D5": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C8": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C10": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C9": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C13": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R19": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R17": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R23": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R10": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R7": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R6": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C3": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R3": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R2": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D9": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D7": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D6": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Q6": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C2": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "IC2": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C16": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D3": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R9": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C25": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "U6": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "D12": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R20": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C11": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R22": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R46": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Q5": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R39": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "U3": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C39": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "L4": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "L5": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C37": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C15": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C38": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "U4": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R48": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R51": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Y1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C21": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C19": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C17": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R53": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C40": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C22": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R52": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R54": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C23": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "RS1": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R37": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R35": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R43": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R41": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R49": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R45": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R32": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R36": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R42": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R40": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R47": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R44": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Q3": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "Q4": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "R21": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ],
+    "C20": [
+        0,
+        [
+            "Not Missing",
+            "Not Shifted",
+            "Not an IC",
+            "Ignore",
+            "YELLOW"
+        ]
+    ]
+}

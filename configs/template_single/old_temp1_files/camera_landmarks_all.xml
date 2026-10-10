@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>1993410</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-01-30 08:12:22.927452+00:00</created>
+      <updated>2025-01-30 08:15:24.419594+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>1995888</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/1993410</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>khadija40</username>
+        <email>khadija.irfan@visionrdai.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>circle</name>
+          <color>#6f883c</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>component</name>
+          <color>#6ba4dd</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-01-30 08:15:32.758625+00:00</dumped>
+  </meta>
+  <image id="0" name="ref.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1645.54" ytl="513.95" xbr="1872.56" ybr="725.36" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="4156.37" ytl="586.21" xbr="4352.19" ybr="778.56" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="4123.04" ytl="3083.29" xbr="4317.99" ybr="3268.13" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="1589.57" ytl="3021.65" xbr="1835.64" ybr="3257.33" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="4340.44" ytl="1548.29" xbr="4540.07" ybr="2014.10" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="4629.49" ytl="1750.00" xbr="4928.94" ybr="1997.46" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2539.59" ytl="269.40" xbr="2695.55" ybr="421.20" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2539.59" ytl="481.51" xbr="2676.84" ybr="600.04" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2545.83" ytl="691.54" xbr="2681.00" ybr="816.31" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2533.35" ytl="903.65" xbr="2681.00" ybr="1040.89" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2897.26" ytl="909.88" xbr="3040.75" ybr="1045.05" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2909.74" ytl="706.09" xbr="3036.59" ybr="820.47" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2911.82" ytl="496.06" xbr="3038.67" ybr="610.44" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2905.58" ytl="281.87" xbr="3051.15" ybr="427.44" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2226.10" ytl="2372.67" xbr="2409.01" ybr="2565.22" z_order="0">
+    </box>
+  </image>
+</annotations>

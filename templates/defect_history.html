@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Defect History - Advanced</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --white: #ffffff;
+            --light-gray: #f1f5f9;
+            --medium-gray: #e2e8f0;
+            --dark-gray: #334155;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --accent-red: #ef4444;
+            --accent-green: #22c55e;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--medium-gray);
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--light-gray);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+        .stat-icon.green { background: rgba(34, 197, 94, 0.1); color: var(--accent-green); }
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+        .stat-icon.orange { background: rgba(249, 115, 22, 0.1); color: var(--accent-orange); }
+
+        /* Filters */
+        .filters-section {
+            background: var(--white);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+            margin-bottom: 32px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            padding: 10px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Defects Grid */
+        .defects-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--light-gray);
+            border-radius: var(--radius-md);
+            padding: 2px;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .defects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .defects-list {
+            display: none;
+        }
+
+        .defect-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .defect-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: var(--light-gray);
+        }
+
+        .defect-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .defect-image:hover {
+            transform: scale(1.05);
+        }
+
+        .image-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+        }
+
+        .view-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .image-container:hover .view-overlay {
+            opacity: 1;
+        }
+
+        .view-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+
+        .defect-info {
+            padding: 20px;
+        }
+
+        .defect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .defect-type {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .confidence-badge {
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .confidence-high {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--accent-green);
+        }
+
+        .confidence-medium {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .confidence-low {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+        }
+
+        .defect-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .detail-item {
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--text-dark);
+        }
+
+        .defect-timestamp {
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--light-gray);
+            padding-top: 12px;
+        }
+
+        /* Pagination */
+        .pagination-section {
+            padding: 20px 24px;
+            border-top: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .pagination {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--medium-gray);
+            background: var(--white);
+            color: var(--text-dark);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .page-btn:hover {
+            background: var(--light-gray);
+        }
+
+        .page-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: var(--radius-md);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--light-gray);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .defects-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+
+            .defect-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">PCB Defect History</h1>
+            <div class="header-actions">
+                <a href="{{ url_for('analytic') }}" class="btn btn-outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <button onclick="exportData()" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="stat-value">{{ stats.total_defects }}</div>
+                <div class="stat-label">Total Defects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="stat-value">{{ stats.high_confidence }}</div>
+                <div class="stat-label">High Confidence</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                </div>
+                <div class="stat-value">{{ stats.unique_panels }}</div>
+                <div class="stat-label">Unique Panels</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="stat-value">{{ stats.defect_types }}</div>
+                <div class="stat-label">Defect Types</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-header">
+                <h2 class="filters-title">Filter Defects</h2>
+                <button onclick="resetFilters()" class="btn btn-outline">Reset</button>
+            </div>
+            <form method="get" id="filterForm">
+                <div class="filters-grid">
+                    <div class="form-group">
+                        <label class="form-label">Date From</label>
+                        <input type="date" name="from" class="form-control" value="{{ request.args.get('from', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date To</label>
+                        <input type="date" name="to" class="form-control" value="{{ request.args.get('to', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Panel Number</label>
+                        <select name="panel" class="form-control">
+                            <option value="">All Panels</option>
+                            {% for panel in available_panels %}
+                            <option value="{{ panel }}" {% if request.args.get('panel') == panel %}selected{% endif %}>{{ panel }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PCB Number</label>
+                        <input type="text" name="pcb" class="form-control" placeholder="Enter PCB number" value="{{ request.args.get('pcb', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Defect Type</label>
+                        <select name="defect_type" class="form-control">
+                            <option value="">All Types</option>
+                            {% for defect_type in available_defect_types %}
+                            <option value="{{ defect_type }}" {% if request.args.get('defect_type') == defect_type %}selected{% endif %}>{{ defect_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confidence</label>
+                        <select name="confidence" class="form-control">
+                            <option value="">All Confidence</option>
+                            <option value="true" {% if request.args.get('confidence') == 'true' %}selected{% endif %}>High (≥ 0.8)</option>
+                            <option value="false" {% if request.args.get('confidence') == 'false' %}selected{% endif %}>Low (< 0.8)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filters-actions">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <button type="button" onclick="clearFilters()" class="btn btn-outline">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Defects -->
+        <div class="defects-section">
+            <div class="section-header">
+                <h2 class="section-title">Defects ({{ pagination.total }} found)</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="switchView('grid')">Grid</button>
+                    <button class="view-btn" onclick="switchView('list')">List</button>
+                </div>
+            </div>
+
+            {% if defects %}
+            <div class="defects-grid" id="defectsGrid">
+                {% for defect in defects %}
+                <div class="defect-card">
+                    <div class="image-container">
+                        {% if defect.image_path %}
+                            {% set clean_path = defect.image_path.replace('\\', '/') %}
+                            {% if clean_path.startswith('static/') %}
+                                {% set image_url = url_for('static', filename=clean_path.replace('static/', '')) %}
+                            {% else %}
+                                {% set filename = clean_path.split('/')[-1] %}
+                                {% set image_url = url_for('static', filename='defect_images/' + filename) %}
+                            {% endif %}
+                            <img src="{{ image_url }}" alt="Defect Image" class="defect-image" onclick="viewImage('{{ image_url }}', '{{ defect.defect_type }}')">
+                            <div class="view-overlay" onclick="viewImage('{{ image_url }}', '{{ defect.defect_type }}')">
+                                <div class="view-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="image-placeholder">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                </svg>
+                                <p>No Image</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="defect-info">
+                        <div class="defect-header">
+                            <div class="defect-type">{{ defect.defect_type }}</div>
+                            <div class="confidence-badge {% if defect.confidence >= 0.8 %}confidence-high{% elif defect.confidence >= 0.5 %}confidence-medium{% else %}confidence-low{% endif %}">
+                                {{ "%.1f"|format(defect.confidence * 100) }}%
+                            </div>
+                        </div>
+                        <div class="defect-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Panel:</div>
+                                <div class="detail-value">{{ defect.panel_number or 'N/A' }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">PCB:</div>
+                                <div class="detail-value">{{ defect.pcb_number or 'N/A' }}</div>
+                            </div>
+                        </div>
+                        {% if defect.remarks %}
+                        <div class="detail-item">
+                            <div class="detail-label">Remarks:</div>
+                            <div class="detail-value">{{ defect.remarks }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="defect-timestamp">
+                            {{ defect.timestamp.strftime('%Y-%m-%d %H:%M:%S') if defect.timestamp else 'Unknown' }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <h3>No defects found</h3>
+                <p>Try adjusting your filters or check back later.</p>
+            </div>
+            {% endif %}
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    Showing {{ ((pagination.page - 1) * pagination.per_page + 1) }} to {{ (pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total) }} of {{ pagination.total }} results
+                </div>
+                <div class="pagination">
+                    {% if pagination.has_prev %}
+                    <a href="{{ url_for('defect_history', page=pagination.page-1, confidence=request.args.get('confidence'), panel=request.args.get('panel'), pcb=request.args.get('pcb'), defect_type=request.args.get('defect_type'), **{'from': request.args.get('from'), 'to': request.args.get('to')}) }}" class="page-btn">‹</a>
+                    {% else %}
+                    <span class="page-btn disabled">‹</span>
+                    {% endif %}
+
+                    {% for page_num in range(1, pagination.pages + 1) %}
+                        {% if page_num == pagination.page %}
+                        <span class="page-btn active">{{ page_num }}</span>
+                        {% elif page_num <= 3 or page_num > pagination.pages - 3 or (page_num >= pagination.page - 1 and page_num <= pagination.page + 1) %}
+                        <a href="{{ url_for('defect_history', page=page_num, confidence=request.args.get('confidence'), panel=request.args.get('panel'), pcb=request.args.get('pcb'), defect_type=request.args.get('defect_type'), **{'from': request.args.get('from'), 'to': request.args.get('to')}) }}" class="page-btn">{{ page_num }}</a>
+                        {% elif page_num == 4 or page_num == pagination.pages - 3 %}
+                        <span class="page-btn disabled">…</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <a href="{{ url_for('defect_history', page=pagination.page+1, confidence=request.args.get('confidence'), panel=request.args.get('panel'), pcb=request.args.get('pcb'), defect_type=request.args.get('defect_type'), **{'from': request.args.get('from'), 'to': request.args.get('to')}) }}" class="page-btn">›</a>
+                    {% else %}
+                    <span class="page-btn disabled">›</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Defect Image</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="loading" id="imageLoading">
+                    <div class="spinner"></div>
+                </div>
+                <img id="modalImage" class="modal-image" style="display:none;">
+                <div id="imageError" style="display:none;">
+                    <p>Failed to load image</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // View Image Modal
+        function viewImage(src, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const loading = document.getElementById('imageLoading');
+            const error = document.getElementById('imageError');
+
+            modalTitle.textContent = title || 'Defect Image';
+            modal.style.display = 'flex';
+            loading.style.display = 'flex';
+            modalImage.style.display = 'none';
+            error.style.display = 'none';
+
+            const img = new Image();
+            img.onload = function() {
+                modalImage.src = src;
+                modalImage.style.display = 'block';
+                loading.style.display = 'none';
+            };
+            img.onerror = function() {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            };
+            img.src = src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Close modal on outside click
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target.id === 'imageModal') {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Filter Functions
+        function resetFilters() {
+            window.location.href = '{{ url_for("defect_history") }}';
+        }
+
+        function clearFilters() {
+            document.getElementById('filterForm').reset();
+        }
+
+        // View Toggle
+        function switchView(view) {
+            const gridView = document.getElementById('defectsGrid');
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (view === 'grid') {
+                gridView.style.display = 'grid';
+            } else {
+                gridView.style.display = 'none';
+                // Implement list view if needed
+            }
+        }
+
+        // Export Function
+        function exportData() {
+            // Implement export functionality
+            alert('Export functionality would be implemented here');
+        }
+
+        // Auto-submit form on filter change
+        document.querySelectorAll('select[name], input[type="date"]').forEach(element => {
+            element.addEventListener('change', function() {
+                document.getElementById('filterForm').submit();
+            });
+        });
+    </script>
+</body>
+</html>

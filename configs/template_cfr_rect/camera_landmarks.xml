@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>2151231</id>
+      <size>1</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-02-21 11:11:44.917628+00:00</created>
+      <updated>2025-02-21 11:15:21.473873+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>0</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>2153670</id>
+          <start>0</start>
+          <stop>0</stop>
+          <url>https://app.cvat.ai/api/jobs/2151231</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>uzair43</username>
+        <email>uzair.arkon@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>landmark</name>
+          <color>#70f80b</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>component</name>
+          <color>#6ba4dd</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-02-21 11:15:27.080699+00:00</dumped>
+  </meta>
+  <image id="0" name="cfr_rect.bmp" width="5472" height="3648">
+    <box label="landmark" source="manual" occluded="0" xtl="1368.78" ytl="1165.08" xbr="1583.07" ybr="1379.37" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="2453.40" ytl="1191.60" xbr="2750.62" ybr="1412.80" z_order="0">
+    </box>
+    <box label="landmark" source="manual" occluded="0" xtl="3806.00" ytl="1216.50" xbr="4010.80" ybr="1409.00" z_order="0">
+    </box>
+    <box label="component" source="manual" occluded="0" xtl="3786.74" ytl="2173.74" xbr="3954.40" ybr="2405.49" z_order="0">
+    </box>
+  </image>
+</annotations>

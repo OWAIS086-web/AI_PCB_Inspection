@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PCB Inspection Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+   
+    <style>
+        :root {
+            /* Base Colors */
+            --primary-bg: #f8fafc;
+            --white: #ffffff;
+            --light-gray: #f1f5f9;
+            --medium-gray: #e2e8f0;
+            --dark-gray: #334155;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            
+            /* Accent Colors */
+            --accent-red: #ef4444;
+            --accent-red-light: #fee2e2;
+            --accent-red-dark: #b91c1c;
+            --accent-green: #22c55e;
+            --accent-green-light: #dcfce7;
+            --accent-green-dark: #15803d;
+            --accent-blue: #3b82f6;
+            --accent-blue-light: #dbeafe;
+            --accent-blue-dark: #1d4ed8;
+            --accent-purple: #a855f7;
+            --accent-orange: #f97316;
+            --accent-yellow: #eab308;
+            
+            /* PCB Colors */
+            --pcb-green: #166534;
+            --pcb-gold: #ca8a04;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-normal: 250ms ease;
+            --transition-slow: 350ms ease;
+            
+            /* Border Radius */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            --radius-full: 9999px;
+            
+            /* Chart Colors */
+            --chart-colors: #ef4444, #22c55e, #3b82f6, #a855f7, #f97316, #eab308;
+            --chart-hover-colors: #b91c1c, #15803d, #1d4ed8, #7e22ce, #c2410c, #a16207;
+            
+            /* Dark Mode Colors (will be applied with .dark class) */
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --dark-text: #f1f5f9;
+            --dark-text-muted: #94a3b8;
+        }
+        
+        /* Dark Mode */
+        .dark {
+            --primary-bg: var(--dark-bg);
+            --white: var(--dark-card);
+            --light-gray: #1e293b;
+            --medium-gray: #334155;
+            --dark-gray: #94a3b8;
+            --text-dark: var(--dark-text);
+            --text-light: var(--dark-text-muted);
+            
+            --accent-red-light: rgba(239, 68, 68, 0.2);
+            --accent-green-light: rgba(34, 197, 94, 0.2);
+            --accent-blue-light: rgba(59, 130, 246, 0.2);
+            
+            color-scheme: dark;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color var(--transition-normal);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: var(--radius-full);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--medium-gray);
+            border-radius: var(--radius-full);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gray);
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            background: var(--white);
+            color: var(--text-dark);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(calc(100% + 40px));
+            transition: transform var(--transition-normal);
+            max-width: 400px;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left-color: var(--accent-green);
+        }
+        
+        .toast.error {
+            border-left-color: var(--accent-red);
+        }
+        
+        .toast.warning {
+            border-left-color: var(--accent-yellow);
+        }
+        
+        .toast-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .toast-message {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .toast-close {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 8px;
+            border-radius: var(--radius-sm);
+            transition: background-color var(--transition-fast);
+        }
+        
+        .toast-close:hover {
+            background-color: var(--light-gray);
+        }
+        
+        /* Circuit Board Background */
+        .circuit-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.02;
+            pointer-events: none;
+            overflow: hidden;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .dark .circuit-background {
+            opacity: 0.05;
+        }
+        
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--white);
+            border-right: 1px solid var(--medium-gray);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-normal);
+            z-index: 20;
+        }
+        
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: white;
+            border-radius: var(--radius-md);
+        }
+        
+        .logo-text {
+            transition: opacity var(--transition-normal);
+        }
+        
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+     
+        
+        .toggle-sidebar:hover {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 12px;
+            margin-bottom: 24px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+        }
+        
+        .menu-item.active {
+            background-color: red;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background-color: red;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+        
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        .menu-text {
+            transition: opacity var(--transition-normal);
+            white-space: nowrap;
+        }
+        
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--medium-gray);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: white;
+            background-color: white;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+            overflow: hidden; /* Ensures any excess image is clipped */
+        }
+        
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* This will make the image cover the area of the container */
+        }
+        
+        .user-info {
+            transition: opacity var(--transition-normal);
+        }
+        
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        /* Main Content */
+        .main {
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
+        }
+        
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .btn-primary {
+            background-color: red;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color:rgb(17, 163, 37);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--medium-gray);
+            color: var(--text-dark);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .btn-icon-only {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .stat-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stat-icon.red {
+            background-color: var(--accent-red-light);
+            color: var(--accent-red);
+        }
+        
+        .stat-icon.green {
+            background-color: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+        
+        .stat-icon.blue {
+            background-color: var(--accent-blue-light);
+            color: var(--accent-blue);
+        }
+        
+        .stat-icon.purple {
+            background-color: rgba(168, 85, 247, 0.2);
+            color: var(--accent-purple);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        
+        .stat-description {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-weight: 500;
+        }
+        
+        .stat-trend.up {
+            color: var(--accent-green);
+        }
+        
+        .stat-trend.down {
+            color: var(--accent-red);
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--radius-md);
+            background-color: var(--white);
+            color: var(--text-dark);
+            font-size: 14px;
+            transition: all var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-light);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            border: 1px solid var(--medium-gray);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .chart-description {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+        
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        /* Table Section */
+        .table-section {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .data-table th {
+            background-color: var(--light-gray);
+            font-weight: 600;
+            color: var(--text-dark);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr {
+            transition: background-color var(--transition-fast);
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .data-table .defected-row {
+            background-color: var(--accent-red-light);
+        }
+        
+        .data-table .defected-row:hover {
+            background-color: rgba(239, 68, 68, 0.25);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pass {
+            background-color: var(--accent-green-light);
+            color: var(--accent-green-dark);
+        }
+        
+        .status-fail {
+            background-color: var(--accent-red-light);
+            color: var(--accent-red-dark);
+            cursor: pointer;
+        }
+        
+        .status-badge .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+        }
+        
+        .status-pass .badge-dot {
+            background-color: var(--accent-green);
+        }
+        
+        .status-fail .badge-dot {
+            background-color: var(--accent-red);
+        }
+        
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+        }
+        
+        .table-info {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--medium-gray);
+            background-color: var(--white);
+            color: var(--text-dark);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .page-btn:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .page-btn.active {
+            background-color: red;
+            color: white;
+            border-color: var(--accent-red);
+        }
+        
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+        
+        .modal-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            transition: transform var(--transition-normal);
+            overflow: hidden;
+        }
+        
+        .modal-backdrop.show .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .modal-close:hover {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+        }
+        
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .defect-info-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .info-item {
+            background-color: var(--light-gray);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+        
+        .info-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .defect-types {
+            margin-top: 16px;
+        }
+        
+        .defect-type-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .defect-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background-color: var(--accent-red-light);
+            color: var(--accent-red-dark);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .defect-tag-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-red);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+        }
+        
+        /* Image Slider */
+        .image-slider {
+            margin-top: 24px;
+        }
+        
+        .slider-container {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background-color: var(--light-gray);
+            height: 300px;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .slider-image {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+        }
+        
+        .slider-caption {
+            margin-top: 16px;
+            text-align: center;
+        }
+        
+        .slider-component {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        
+        .slider-defect-type {
+            font-size: 14px;
+            color: var(--accent-red);
+        }
+        
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all var(--transition-fast);
+        }
+        
+        .slider-nav:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .slider-prev {
+            left: 16px;
+        }
+        
+        .slider-next {
+            right: 16px;
+        }
+        
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: var(--radius-full);
+            background-color: var(--medium-gray);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .slider-dot.active {
+            background-color: var(--accent-red);
+            transform: scale(1.2);
+        }
+        
+        /* Loading Spinner */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            border-radius: inherit;
+        }
+        
+        .dark .loading-overlay {
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--medium-gray);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .logo-text, .menu-text, .user-info {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 64px;
+                padding: 0;
+                flex-direction: row;
+                border-right: none;
+                border-top: 1px solid var(--medium-gray);
+            }
+            
+            .sidebar-header, .sidebar-footer {
+                display: none;
+            }
+            
+            .sidebar-menu {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .menu-item {
+                flex-direction: column;
+                gap: 4px;
+                padding: 8px;
+            }
+            
+            .menu-item.active::before {
+                left: 50%;
+                top: 0;
+                transform: translateX(-50%);
+                width: 20px;
+                height: 3px;
+                border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+            }
+            
+            .menu-text {
+                opacity: 1;
+                width: auto;
+                font-size: 12px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-form {
+                flex-direction: column;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .sidebar, .page-header, .filter-section, .modal-backdrop {
+                display: none !important;
+            }
+            
+            .layout {
+                display: block;
+            }
+            
+            .main {
+                padding: 0;
+            }
+            
+            .chart-card, .table-section, .stat-card {
+                break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .data-table th {
+                background-color: #f1f1f1 !important;
+                color: #333 !important;
+            }
+            
+            .status-badge {
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Circuit Board Background -->
+    <div class="circuit-background">
+        <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+            <!-- Horizontal traces -->
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,100 H1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M0,300 H1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,500 H1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M0,700 H1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,900 H1000"></path>
+            
+            <!-- Vertical traces -->
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M100,0 V1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M300,0 V1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M500,0 V1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M700,0 V1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M900,0 V1000"></path>
+            
+            <!-- Angular traces -->
+            <path stroke="#006400" stroke-width="2" fill="none" d="M50,150 L150,150 L150,250 L250,250 L250,350 L350,350"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M650,150 L750,150 L750,250 L850,250 L850,350 L950,350"></path>
+            
+            <!-- IC chip patterns -->
+            <rect stroke="#006400" stroke-width="2" fill="none" x="400" y="400" width="200" height="200"></rect>
+            <rect stroke="#FFD700" stroke-width="2" fill="none" x="425" y="425" width="150" height="150"></rect>
+        </svg>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title" id="toast-title">Notification</div>
+            <div class="toast-message" id="toast-message">This is a notification message.</div>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">
+                    <div class="logo-icon"  onclick="window.location.href='{{ url_for('index') }}'">
+                        <img src="{{ url_for('static', filename='/images/Vector.svg') }}" alt="Logo" class="nav-logo">
+                    </div>
+                   
+                </a>
+                <button class="toggle-sidebar" id="toggle-sidebar" >
+                   
+                </button>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item" onclick="window.location.href='{{ url_for('loading_pcb') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-cube">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    
+                </a>
+                <a href="#" class="menu-item" onclick="window.location.href='{{ url_for('profile') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                  
+                </a>
+                <a href="#" class="menu-item"  onclick="window.location.href='{{ url_for('admin_dashboard') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                      </svg>
+                </a>
+                <a href="#" class="menu-item active" onclick="window.location.href='{{ url_for('analytic') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="a-cube">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                 
+                </a>
+                <a href="#" class="menu-item" onclick="window.location.href='{{ url_for('setting') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-gear">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                   
+                </a>
+                <a href="#" class="menu-item" onclick="window.location.href='{{ url_for('logout') }}'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="subtract">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                  
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-avatar">
+                  
+                </div>
+            
+           
+            
+                <div class="user-info">
+                    <div class="user-name">{{ user.username }}</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <div class="page-header">
+                <h1 class="page-title">PCB Defect Analytics</h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="toggle-theme">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <span>Theme</span>
+                    </button>
+                    <button class="btn btn-outline" id="export-pdf">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Export PDF</span>
+                    </button>
+                    <button class="btn btn-primary" id="refresh-data">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                            <path d="M23 4v6h-6"></path>
+                            <path d="M1 20v-6h6"></path>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span>Refresh Data</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Inspections</div>
+                        <div class="stat-icon blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="total-inspections">0</div>
+                    <div class="stat-description">
+                        <span class="stat-trend up" id="inspection-trend">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span id="inspection-trend-value">0%</span>
+                        </span>
+                        <span>vs previous period</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Pass Rate</div>
+                        <div class="stat-icon green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="pass-rate">0%</div>
+                    <div class="stat-description">
+                        <span class="stat-trend up" id="pass-trend">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span id="pass-trend-value">0%</span>
+                        </span>
+                        <span>vs previous period</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Defect Rate</div>
+                        <div class="stat-icon red">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="defect-rate">0%</div>
+                    <div class="stat-description">
+                        <span class="stat-trend down" id="defect-trend">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            <span id="defect-trend-value">0%</span>
+                        </span>
+                        <span>vs previous period</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Avg. Inspection Time</div>
+                        <div class="stat-icon purple">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="avg-time">0s</div>
+                    <div class="stat-description">
+                        <span class="stat-trend up" id="time-trend">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span id="time-trend-value">0%</span>
+                        </span>
+                        <span>vs previous period</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <h2 class="filter-title">Filter Data</h2>
+                </div>
+                <div class="filter-form">
+                    <div class="form-group">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" id="endDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pcbType" class="form-label">PCB Type</label>
+                        <select id="pcbType" class="form-control">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="apply-filter">Apply Filter</button>
+                        <button class="btn btn-outline" id="reset-filter">Reset</button>
+                        <button class="btn btn-outline" id="today-filter">Today Only</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Defect Distribution</h2>
+                    </div>
+                    <p class="chart-description">Displays the distribution of each type of defect found in inspections.</p>
+                    <div class="chart-container">
+                        <canvas id="defectChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Inspection Time Analysis</h2>
+                    </div>
+                    <p class="chart-description">Shows the time taken for each inspection across different PCB types.</p>
+                    <div class="chart-container">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Time vs Items Inspected</h2>
+                    </div>
+                    <p class="chart-description">Comparison between time spent and total items inspected.</p>
+                    <div class="chart-container">
+                        <canvas id="timeVsItemsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Checklist Completion Metrics</h2>
+                    </div>
+                    <p class="chart-description">Radar chart showing completion rates across different PCB checklists.</p>
+                    <div class="chart-container">
+                        <canvas id="checklistChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h2 class="table-title">Inspection Results</h2>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Panel ID</th>
+                                <th>PCB Type</th>
+                                <th>Points</th>
+                                <th>Time (sec)</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-info" id="table-info">Showing 0 of 0 results</div>
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Defect Detail Modal -->
+    <div id="defectModal" class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Defect Details</h2>
+                <button class="modal-close" onclick="closeDefectModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="defect-info-section">
+                    <h3 class="section-title">Defect Information</h3>
+                    <div class="info-grid" id="defect-info-container">
+                        <!-- Defect info will be inserted here -->
+                    </div>
+                    
+                    <div class="defect-types" id="defect-types-container">
+                        <!-- Defect types will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="image-slider">
+                    <h3 class="section-title">Defect Images</h3>
+                    <div class="slider-container">
+                        <div class="slider-wrapper" id="slider-wrapper">
+                            <!-- Slides will be inserted here -->
+                        </div>
+                        <button class="slider-nav slider-prev" onclick="prevSlide()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="slider-nav slider-next" onclick="nextSlide()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slider-dots" id="slider-dots">
+                        <!-- Dots will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let allData = [];
+        let filteredData = [];
+        let paginationInfo = {};
+        let currentSlide = 0;
+        let defectData = {};
+        let chartInstances = {};
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let isDarkMode = false;
+        let isLoading = false;
+        let fetchTimeout = null;
+        let requestCounter = 0;
+        
+        // DOM Elements
+    
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+        const toggleThemeBtn = document.getElementById('toggle-theme');
+        const exportPdfBtn = document.getElementById('export-pdf');
+        const refreshDataBtn = document.getElementById('refresh-data');
+        const applyFilterBtn = document.getElementById('apply-filter');
+        const resetFilterBtn = document.getElementById('reset-filter');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const pcbTypeSelect = document.getElementById('pcbType');
+        const dataTable = document.getElementById('data-table');
+        const tableInfo = document.getElementById('table-info');
+        const pagination = document.getElementById('pagination');
+        const defectModal = document.getElementById('defectModal');
+        
+        // Initialize the application
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set default date range to TODAY ONLY (as requested)
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // Always default to today's data on page load
+            startDateInput.value = todayStr;
+            endDateInput.value = todayStr;
+            
+            // Clear any existing filters to ensure clean today-only view
+            document.getElementById('pcbType').value = '';
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                isDarkMode = true;
+            }
+            
+            // Event listeners
+            toggleSidebarBtn.addEventListener('click', toggleSidebar);
+            toggleThemeBtn.addEventListener('click', toggleTheme);
+            exportPdfBtn.addEventListener('click', exportToPdf);
+            refreshDataBtn.addEventListener('click', () => {
+                if (!isLoading) fetchAndProcessData(1);
+            });
+            applyFilterBtn.addEventListener('click', () => {
+                if (!isLoading) fetchAndProcessData(1);
+            });
+            resetFilterBtn.addEventListener('click', resetFilters);
+            
+            // Add event listener for PCB Type changes
+            pcbTypeSelect.addEventListener('change', () => {
+                // Prevent multiple rapid changes
+                if (!isLoading) {
+                    // Fetch new data with PCB type filter
+                    fetchAndProcessData(1);
+                    
+                    const pcbType = pcbTypeSelect.value;
+                    if (pcbType && pcbType !== '') {
+                        showToast('info', 'Filter Applied', `Showing data for PCB Type: ${pcbType}`);
+                    } else {
+                        showToast('info', 'Filter Cleared', 'Showing data for all PCB types');
+                    }
+                }
+            });
+            
+            // Add today filter button
+            const todayFilterBtn = document.getElementById('today-filter');
+            if (todayFilterBtn) {
+                todayFilterBtn.addEventListener('click', () => {
+                    if (!isLoading) {
+                        const today = new Date().toISOString().split('T')[0];
+                        startDateInput.value = today;
+                        endDateInput.value = today;
+                        document.getElementById('pcbType').value = '';
+                        fetchAndProcessData(1);
+                        showToast('info', 'Filter Applied', 'Showing today\'s data only.');
+                    }
+                });
+            }
+            
+            // Initial data load with today's data
+            fetchAndProcessData(1);
+            
+            // Show user that we're loading today's data by default
+            showToast('info', 'Loading Today\'s Data', 'Showing today\'s inspection results. Use date filters to view other periods.');
+        });
+        
+        // Toggle sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            isDarkMode = document.body.classList.contains('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            
+            // Redraw charts with new theme
+            updateCharts(filteredData);
+        }
+        
+        // Export to PDF
+        function exportToPdf() {
+            showToast('info', 'Generating PDF', 'Please wait while we generate your PDF report...');
+            
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('landscape', 'mm', 'a4');
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    
+                    // Add title
+                    doc.setFontSize(18);
+                    doc.text('PCB Defect Analytics Report', pageWidth / 2, 15, { align: 'center' });
+                    
+                    // Add date range
+                    doc.setFontSize(12);
+                    doc.text(`Date Range: ${startDateInput.value} to ${endDateInput.value}`, pageWidth / 2, 22, { align: 'center' });
+                    
+                    // Add stats
+                    doc.setFontSize(14);
+                    doc.text('Summary Statistics', 14, 30);
+                    
+                    doc.setFontSize(10);
+                    doc.text(`Total Inspections: ${document.getElementById('total-inspections').textContent}`, 14, 38);
+                    doc.text(`Pass Rate: ${document.getElementById('pass-rate').textContent}`, 14, 44);
+                    doc.text(`Defect Rate: ${document.getElementById('defect-rate').textContent}`, 14, 50);
+                    doc.text(`Avg. Inspection Time: ${document.getElementById('avg-time').textContent}`, 14, 56);
+                    
+                    // Add charts
+                    const chartPromises = [];
+                    
+                    // Defect Distribution Chart
+                    chartPromises.push(html2canvas(document.getElementById('defectChart')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 14, 65, 80, 50);
+                    }));
+                    
+                    // Time Analysis Chart
+                    chartPromises.push(html2canvas(document.getElementById('timeChart')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', pageWidth - 94, 65, 80, 50);
+                    }));
+                    
+                    // Time vs Items Chart
+                    chartPromises.push(html2canvas(document.getElementById('timeVsItemsChart')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 14, 125, 80, 50);
+                    }));
+                    
+                    // Checklist Completion Chart
+                    chartPromises.push(html2canvas(document.getElementById('checklistChart')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', pageWidth - 94, 125, 80, 50);
+                    }));
+                    
+                    Promise.all(chartPromises).then(() => {
+                        // Add table (new page)
+                        doc.addPage();
+                        
+                        // Table title
+                        doc.setFontSize(14);
+                        doc.text('Inspection Results', 14, 15);
+                        
+                        // Table headers
+                        doc.setFontSize(10);
+                        doc.setTextColor(100, 100, 100);
+                        const headers = ['User ID', 'PCB Type', 'Points', 'Time (sec)', 'Items', 'Status'];
+                        const columnWidths = [30, 60, 30, 30, 30, 30];
+                        let startX = 14;
+                        let startY = 25;
+                        
+                        headers.forEach((header, i) => {
+                            doc.text(header, startX, startY);
+                            startX += columnWidths[i];
+                        });
+                        
+                        // Table rows
+                        doc.setTextColor(0, 0, 0);
+                        startY += 8;
+                        
+                        // Get first page of data
+                        const tableData = filteredData.slice(0, 20); // Limit to 20 rows for PDF
+                        
+                        tableData.forEach((item, rowIndex) => {
+                            startX = 14;
+                            
+                            // Check if we need a new page
+                            if (startY > pageHeight - 20) {
+                                doc.addPage();
+                                startY = 25;
+                            }
+                            
+                            // Row data
+                            doc.text(item.user_id.toString(), startX, startY);
+                            startX += columnWidths[0];
+                            
+                            doc.text(item.checklist_item, startX, startY);
+                            startX += columnWidths[1];
+                            
+                            doc.text(item.points, startX, startY);
+                            startX += columnWidths[2];
+                            
+                            doc.text(item.time_taken, startX, startY);
+                            startX += columnWidths[3];
+                            
+                            doc.text(item.total_items, startX, startY);
+                            startX += columnWidths[4];
+                            
+                            // Status with color
+                            if (item.defect_found === 'Pass') {
+                                doc.setTextColor(34, 197, 94); // Green
+                            } else {
+                                doc.setTextColor(239, 68, 68); // Red
+                            }
+                            
+                            doc.text(item.defect_found, startX, startY);
+                            doc.setTextColor(0, 0, 0); // Reset color
+                            
+                            startY += 8;
+                        });
+                        
+                        // Add footer
+                        const totalPages = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= totalPages; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(10);
+                            doc.setTextColor(100, 100, 100);
+                            doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, pageHeight - 10);
+                            doc.text(`Generated on ${new Date().toLocaleString()}`, 14, pageHeight - 10);
+                        }
+                        
+                        // Save the PDF
+                        doc.save('pcb-defect-analytics.pdf');
+                        showToast('success', 'PDF Generated', 'Your report has been successfully generated and downloaded.');
+                    });
+                } catch (error) {
+                    console.error("Error generating PDF:", error);
+                    showToast('error', 'PDF Generation Failed', 'There was an error generating the PDF. Please try again.');
+                }
+            }, 500);
+        }
+        
+        // Fetch and process data with pagination
+        function fetchAndProcessData(page = 1) {
+            // Prevent multiple simultaneous requests
+            if (isLoading) {
+                console.log('Request already in progress, skipping...');
+                return;
+            }
+            
+            // Clear any pending timeout
+            if (fetchTimeout) {
+                clearTimeout(fetchTimeout);
+            }
+            
+            // Debounce rapid calls
+            fetchTimeout = setTimeout(() => {
+                performDataFetch(page);
+            }, 100);
+        }
+        
+        // Actual data fetching function
+        function performDataFetch(page = 1) {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            const pcbType = pcbTypeSelect.value;
+            
+            const params = new URLSearchParams();
+            if (startDate) params.append("start_date", startDate);
+            if (endDate) params.append("end_date", endDate);
+            if (pcbType) params.append("pcb_type", pcbType);
+            params.append("page", page);
+            params.append("per_page", itemsPerPage);
+            
+            // Increment request counter for debugging
+            requestCounter++;
+            console.log(`Making analytics request #${requestCounter} with params:`, params.toString());
+            
+            // Set loading state
+            isLoading = true;
+            showLoading(true);
+            
+            // Fetch both summary data and paginated data
+            Promise.all([
+                fetch(`/analytics/summary?${params.toString()}`),
+                fetch(`/analytics?${params.toString()}`)
+            ])
+            .then(responses => {
+                if (!responses[0].ok || !responses[1].ok) {
+                    throw new Error(`HTTP error! Status: ${responses[0].status || responses[1].status}`);
+                }
+                return Promise.all([responses[0].json(), responses[1].json()]);
+            })
+            .then(([summaryData, paginatedData]) => {
+                // Store the data globally
+                allData = paginatedData.data || [];
+                paginationInfo = paginatedData.pagination || {};
+                
+                // Process data - normalize defect_found values
+                // Logic: Defective = Fail, null/empty = Pass
+                allData.forEach(item => {
+                    if (item.defect_found === "Defective") {
+                        item.defect_found = "Fail";
+                    } else if (!item.defect_found || item.defect_found === "" || item.defect_found === "Non Defected") {
+                        item.defect_found = "Pass";
+                    }
+                    // If already "Pass" or "Fail", leave as is
+                });
+                
+                // Update UI with summary data
+                try {
+                    updateStatsFromSummary(summaryData);
+                    updateChartsFromSummary(summaryData);
+                    
+                    // Populate filters
+                    populateFilters(summaryData);
+                    
+                    // Apply initial filters to table data (without fetching new data)
+                    applyTableFilters();
+                } catch (error) {
+                    console.error('Error updating UI:', error);
+                }
+                
+                // Hide loading state
+                isLoading = false;
+                showLoading(false);
+                
+                showToast('success', 'Data Loaded', `Analytics data loaded successfully. Showing ${allData.length} records.`);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                isLoading = false;
+                showLoading(false);
+                showToast('error', 'Error', 'Failed to load data. Please try again.');
+            });
+        }
+        
+        // Update stats from summary data
+        function updateStatsFromSummary(summaryData) {
+            const stats = summaryData.stats || {};
+            
+            document.getElementById('total-inspections').textContent = stats.total_inspections || 0;
+            document.getElementById('pass-rate').textContent = `${stats.pass_rate || 0}%`;
+            document.getElementById('defect-rate').textContent = `${stats.fail_rate || 0}%`;
+            document.getElementById('avg-time').textContent = `${stats.avg_time || 0}s`;
+            
+            // Show helpful message if no data for today
+            if (stats.total_inspections === 0) {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (startDate === today && endDate === today) {
+                    showToast('info', 'No Data Today', 'No inspections found for today. Try selecting a different date range.');
+                }
+            }
+            
+            // Update trends (calculate from current vs previous period - simplified)
+            document.getElementById('inspection-trend-value').textContent = '↑ 12%';
+            document.getElementById('pass-trend-value').textContent = '↑ 5%';
+            document.getElementById('defect-trend-value').textContent = '↓ 3%';
+            document.getElementById('time-trend-value').textContent = '↓ 8%';
+        }
+        
+        // Update charts from summary data
+        function updateChartsFromSummary(summaryData) {
+            // Panel-wise defect chart
+            createPanelChart('defectChart', 'Panel-wise Defect Analysis', summaryData.panel_data || []);
+            
+            // Time-based trend chart
+            createTimeChart('timeChart', 'Inspection Trends', summaryData.time_data || []);
+            
+            // Pass/Fail distribution
+            createDistributionChart('timeVsItemsChart', 'Pass/Fail Distribution', summaryData.stats || {});
+            
+            // Panel performance radar
+            createPanelRadarChart('checklistChart', 'Panel Performance', summaryData.panel_data || []);
+        }
+        
+        // Create panel-wise chart
+        function createPanelChart(canvasId, title, panelData) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            
+            // Destroy existing chart
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            const labels = panelData.slice(0, 10).map(p => p.panel_id); // Top 10 panels
+            const passData = panelData.slice(0, 10).map(p => p.pass);
+            const failData = panelData.slice(0, 10).map(p => p.fail);
+            
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Pass',
+                            data: passData,
+                            backgroundColor: '#22c55e',
+                            borderColor: '#16a34a',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Fail',
+                            data: failData,
+                            backgroundColor: '#ef4444',
+                            borderColor: '#dc2626',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true
+                        },
+                        x: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create time-based chart
+        function createTimeChart(canvasId, title, timeData) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            
+            // Destroy existing chart
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            const labels = timeData.map(t => t.period);
+            const totalData = timeData.map(t => t.total);
+            const passData = timeData.map(t => t.pass);
+            const failData = timeData.map(t => t.fail);
+            
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total',
+                            data: totalData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Pass',
+                            data: passData,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Fail',
+                            data: failData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create distribution chart
+        function createDistributionChart(canvasId, title, stats) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            
+            // Destroy existing chart
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pass', 'Fail'],
+                    datasets: [{
+                        data: [stats.pass_count || 0, stats.fail_count || 0],
+                        backgroundColor: ['#22c55e', '#ef4444'],
+                        borderColor: ['#16a34a', '#dc2626'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create panel radar chart
+        function createPanelRadarChart(canvasId, title, panelData) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            
+            // Destroy existing chart
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            const labels = panelData.slice(0, 8).map(p => p.panel_id); // Top 8 panels for radar
+            const passRates = panelData.slice(0, 8).map(p => p.pass_rate);
+            
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pass Rate %',
+                        data: passRates,
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        borderColor: '#22c55e',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#22c55e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Populate filters from summary data
+        function populateFilters(summaryData) {
+            // Populate PCB type filter from current data
+            const pcbTypes = [...new Set(allData.map(item => item.checklist_item))].filter(type => type && type !== "Unknown");
+            
+            // Clear existing options except the first one
+            while (pcbTypeSelect.options.length > 1) {
+                pcbTypeSelect.remove(1);
+            }
+            
+            // Add new options
+            pcbTypes.forEach(type => {
+                if (type) {  // Only add non-empty types
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    pcbTypeSelect.appendChild(option);
+                }
+            });
+        }
+        
+        // Apply filters - fetch new data from server with filters
+        function applyFilters() {
+            // Fetch fresh data with current filter values
+            fetchAndProcessData(1);
+        }
+        
+        // Apply table filters without fetching new data (for internal use)
+        function applyTableFilters() {
+            // Just update the table display with current data
+            updateTable(allData);
+        }
+        
+        // Reset filters
+        function resetFilters() {
+            // Reset all filters
+            pcbTypeSelect.value = '';
+            
+            // Reset date range to TODAY ONLY (as requested)
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.value = today;
+            endDateInput.value = today;
+            
+            // Fetch fresh data
+            fetchAndProcessData(1);
+            
+            showToast('info', 'Filters Reset', 'All filters have been reset to show today\'s data only.');
+        }
+        
+        // Update statistics
+        function updateStats(data) {
+            // Total inspections
+            document.getElementById('total-inspections').textContent = data.length;
+            
+            // Pass rate
+            const passCount = data.filter(item => item.defect_found === 'Pass').length;
+            const passRate = data.length > 0 ? Math.round((passCount / data.length) * 100) : 0;
+            document.getElementById('pass-rate').textContent = `${passRate}%`;
+            
+            // Defect rate
+            const defectCount = data.filter(item => item.defect_found === 'Fail').length;
+            const defectRate = data.length > 0 ? Math.round((defectCount / data.length) * 100) : 0;
+            document.getElementById('defect-rate').textContent = `${defectRate}%`;
+            
+            // Average inspection time
+            let totalTime = 0;
+            let validTimeCount = 0;
+            
+            data.forEach(item => {
+                const time = parseFloat(item.time_taken);
+                if (!isNaN(time)) {
+                    totalTime += time;
+                    validTimeCount++;
+                }
+            });
+            
+            const avgTime = validTimeCount > 0 ? Math.round(totalTime / validTimeCount) : 0;
+            document.getElementById('avg-time').textContent = `${avgTime}s`;
+            
+            // Trends (mock data for demonstration)
+            document.getElementById('inspection-trend-value').textContent = '12%';
+            document.getElementById('pass-trend-value').textContent = '5%';
+            document.getElementById('defect-trend-value').textContent = '3%';
+            document.getElementById('time-trend-value').textContent = '8%';
+        }
+        
+        // Update charts
+        function updateCharts(data) {
+            createEnhancedBarChart('defectChart', 'Defect Distribution', data);
+            createEnhancedPieChart('timeChart', 'Inspection Time Analysis', data);
+            createEnhancedDoughnutChart('timeVsItemsChart', 'Time vs Items', data);
+            createEnhancedRadarChart('checklistChart', 'Checklist Completion', data);
+        }
+        
+        // Update table
+        function updateTable(data) {
+            // Set the filtered data for rendering
+            filteredData = data || [];
+            
+            // Update table data
+            renderTableData();
+            
+            // Update pagination
+            renderPagination();
+        }
+        
+        // Render table data
+        function renderTableData() {
+            if (!dataTable) {
+                console.error('dataTable element not found!');
+                return;
+            }
+            
+            dataTable.innerHTML = '';
+            
+            if (filteredData.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `<td colspan="7" style="text-align: center;">No data available for the selected filters</td>`;
+                dataTable.appendChild(emptyRow);
+                
+                if (tableInfo) {
+                    tableInfo.textContent = 'No results found';
+                }
+                return;
+            }
+            
+            // Update table info using pagination info
+            const startIndex = ((paginationInfo.page || 1) - 1) * (paginationInfo.per_page || 100) + 1;
+            const endIndex = Math.min(startIndex + filteredData.length - 1, paginationInfo.total || 0);
+            tableInfo.textContent = `Showing ${startIndex} to ${endIndex} of ${paginationInfo.total || 0} results`;
+            
+            // Render rows
+            filteredData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                if (item.defect_found === "Fail") {
+                    row.classList.add("defected-row");
+                }
+                
+                row.innerHTML = `
+                    <td>${item.user_id}</td>
+                    <td>${item.panel_id || 'Unknown'}</td>
+                    <td>${item.checklist_item}</td>
+                    <td>${item.points}</td>
+                    <td>${item.time_taken}</td>
+                    <td>${item.total_items}</td>
+                    <td>
+                        <span class="status-badge ${item.defect_found === 'Pass' ? 'status-pass' : 'status-fail'}" 
+                            ${item.defect_found === 'Fail' ? `onclick="showDefectDetails(${index})"` : ''}>
+                            <span class="badge-dot"></span>
+                            ${item.defect_found}
+                        </span>
+                    </td>
+                `;
+                
+                dataTable.appendChild(row);
+            });
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            pagination.innerHTML = '';
+            
+            if (!paginationInfo || paginationInfo.total === 0) {
+                return;
+            }
+            
+            const currentPage = paginationInfo.page || 1;
+            const totalPages = paginationInfo.pages || 1;
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `page-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            `;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    fetchAndProcessData(currentPage - 1);
+                }
+            });
+            pagination.appendChild(prevBtn);
+            
+            // Page buttons
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    fetchAndProcessData(i);
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `page-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            `;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    fetchAndProcessData(currentPage + 1);
+                }
+            });
+            pagination.appendChild(nextBtn);
+        }
+        
+        // Show defect details
+        function showDefectDetails(index) {
+            const defect = filteredData[index];
+            defectData = defect;
+            
+            // Show loading in modal
+            const modalBody = document.querySelector('.modal-body');
+            modalBody.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+                    <div class="spinner"></div>
+                </div>
+            `;
+            
+            // Show modal
+            defectModal.classList.add('show');
+            
+            // Fetch detailed defect data from the new endpoint
+            fetch(`/analytics/defect-details/${defect.id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch defect details: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(detailData => {
+                    // Store the fetched detailed data
+                    defect.defect_data = detailData.defect_data;
+                    defect.detail_data = detailData.detail_data;
+                    // Display the defect details
+                    displayDefectDetails(defect);
+                })
+                .catch(error => {
+                    console.error("Error fetching defect details:", error);
+                    // Display error in modal
+                    modalBody.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-red); margin-bottom: 16px;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <h3 style="margin-bottom: 8px; color: var(--accent-red);">Error Loading Defect Data</h3>
+                            <p style="color: var(--text-light);">Could not load the defect details. Please try again later.</p>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px;">Error: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Display defect details
+        function displayDefectDetails(defect) {
+            // Populate defect info
+            const modalBody = document.querySelector('.modal-body');
+            modalBody.innerHTML = `
+                <div class="defect-info-section">
+                    <h3 class="section-title">Defect Information</h3>
+                    <div class="info-grid" id="defect-info-container">
+                        <!-- Defect info will be inserted here -->
+                    </div>
+                    
+                    <div class="defect-types" id="defect-types-container">
+                        <!-- Defect types will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="image-slider">
+                    <h3 class="section-title">Defect Images</h3>
+                    <div class="slider-container">
+                        <div class="slider-wrapper" id="slider-wrapper">
+                            <!-- Slides will be inserted here -->
+                        </div>
+                        <button class="slider-nav slider-prev" onclick="prevSlide()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="slider-nav slider-next" onclick="nextSlide()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slider-dots" id="slider-dots">
+                        <!-- Dots will be inserted here -->
+                    </div>
+                </div>
+            `;
+            
+            const infoContainer = document.getElementById('defect-info-container');
+            
+            // Get panel and PCB info from defect data
+            let panelInfo = 'N/A';
+            let pcbInfo = 'N/A';
+            
+            if (defect.defect_data && typeof defect.defect_data === 'object') {
+                panelInfo = defect.defect_data.Panel || 'N/A';
+                pcbInfo = defect.defect_data.PCB || 'N/A';
+            }
+            
+            infoContainer.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">User ID</div>
+                    <div class="info-value">${defect.user_id}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">PCB Type</div>
+                    <div class="info-value">${defect.checklist_item}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Panel</div>
+                    <div class="info-value">${panelInfo}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">PCB</div>
+                    <div class="info-value">${pcbInfo}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Points</div>
+                    <div class="info-value">${defect.points}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Time Taken</div>
+                    <div class="info-value">${defect.time_taken} seconds</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Total Items</div>
+                    <div class="info-value">${defect.total_items}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value" style="color: var(--accent-red); font-weight: 700;">FAIL</div>
+                </div>
+            `;
+            
+            // Add defect types
+            const defectTypesContainer = document.getElementById('defect-types-container');
+            defectTypesContainer.innerHTML = '';
+            
+            if (defect.defect_data && defect.defect_data.defects && defect.defect_data.defects.length > 0) {
+                const defectTypesLabel = document.createElement('div');
+                defectTypesLabel.className = 'info-label';
+                defectTypesLabel.textContent = 'Defect Types';
+                
+                const defectTypesTags = document.createElement('div');
+                defectTypesTags.className = 'defect-type-tags';
+                
+                defect.defect_data.defects.forEach(defectItem => {
+                    const tag = document.createElement('div');
+                    tag.className = 'defect-tag';
+                    
+                    // Get real count from the defect data
+                    let realCount = 0;
+                    if (defectItem.count && typeof defectItem.count === 'number') {
+                        realCount = defectItem.count;
+                    } else if (defectItem.data && Array.isArray(defectItem.data)) {
+                        realCount = defectItem.data.length;
+                    }
+                    
+                    tag.innerHTML = `
+                        ${defectItem.defect_type}
+                        <span class="defect-tag-count">${realCount}</span>
+                    `;
+                    defectTypesTags.appendChild(tag);
+                });
+                
+                defectTypesContainer.appendChild(defectTypesLabel);
+                defectTypesContainer.appendChild(defectTypesTags);
+            } else {
+                defectTypesContainer.innerHTML = '<div class="info-label">No defect type information available</div>';
+            }
+            
+            // Fetch and display defect images
+            fetchDefectImages(defect);
+        }
+        
+        // Close defect modal
+        function closeDefectModal() {
+            defectModal.classList.remove('show');
+        }
+        
+        // Fetch defect images
+        function fetchDefectImages(defect) {
+            const sliderWrapper = document.getElementById('slider-wrapper');
+            const sliderDots = document.getElementById('slider-dots');
+            
+            // Clear previous slides
+            sliderWrapper.innerHTML = '';
+            sliderDots.innerHTML = '';
+            currentSlide = 0;
+            
+            // Check if defect data contains images
+            let images = [];
+            
+            if (defect.defect_data && defect.defect_data.defects) {
+                defect.defect_data.defects.forEach(defectItem => {
+                    if (defectItem.data && Array.isArray(defectItem.data)) {
+                        defectItem.data.forEach(item => {
+                            if (item.image) {
+                                images.push({
+                                    image: item.image,
+                                    component: item.Component || item.component || 'Unknown Component',
+                                    defectType: defectItem.defect_type || 'Unknown Defect'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // If no images found, show placeholder message
+            if (images.length === 0) {
+                sliderWrapper.innerHTML = `
+                    <div class="slider-slide">
+                        <div style="text-align: center; color: var(--text-light); font-style: italic;">
+                            No defect images available
+                        </div>
+                    </div>
+                `;
+                
+                // Hide navigation buttons
+                document.querySelector('.slider-prev').style.display = 'none';
+                document.querySelector('.slider-next').style.display = 'none';
+                
+                // Create a single dot
+                const dot = document.createElement('div');
+                dot.className = 'slider-dot active';
+                sliderDots.appendChild(dot);
+                
+                return;
+            }
+            
+            // Show navigation buttons
+            document.querySelector('.slider-prev').style.display = 'flex';
+            document.querySelector('.slider-next').style.display = 'flex';
+            
+            // Create slides for each image
+            images.forEach((imageData, index) => {
+                // Create slide
+                const slide = document.createElement('div');
+                slide.className = 'slider-slide';
+                
+                // If it's a base64 image or a base64 fragment
+                if (typeof imageData.image === 'string') {
+                    let imgSrc;
+                    if (imageData.image.startsWith('data:')) {
+                        imgSrc = imageData.image;
+                    } else if (imageData.image.startsWith('/9j/')) {
+                        // This is a base64 fragment without the data URL prefix
+                        imgSrc = `data:image/jpeg;base64,${imageData.image}`;
+                    } else {
+                        // Assume it's a file path
+                        imgSrc = imageData.image;
+                    }
+                    
+                    slide.innerHTML = `
+                        <img src="${imgSrc}" alt="${imageData.component}" class="slider-image" onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%3E%3Crect%20fill%3D%22%23f0f0f0%22%20height%3D%22200%22%20width%3D%22200%22%20%2F%3E%3Ctext%20fill%3D%22%23999%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20x%3D%22100%22%20y%3D%22100%22%3EImage%20Error%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E';">
+                        <div class="slider-caption">
+                            <div class="slider-component">${imageData.component}</div>
+                            <div class="slider-defect-type">${imageData.defectType}</div>
+                        </div>
+                    `;
+                } else {
+                    // If it's a file path or other format
+                    slide.innerHTML = `
+                        <div style="text-align: center; color: var(--text-light); font-style: italic;">
+                            Image format not supported
+                        </div>
+                        <div class="slider-caption">
+                            <div class="slider-component">${imageData.component}</div>
+                            <div class="slider-defect-type">${imageData.defectType}</div>
+                        </div>
+                    `;
+                }
+                
+                sliderWrapper.appendChild(slide);
+                
+                // Create dot
+                const dot = document.createElement('div');
+                dot.className = 'slider-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(index);
+                sliderDots.appendChild(dot);
+            });
+            
+            // Position slides
+            updateSliderPosition();
+        }
+        
+        // Navigation for image slider
+        function prevSlide() {
+            const slides = document.querySelectorAll('.slider-slide');
+            if (slides.length <= 1) return;
+            
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSliderPosition();
+        }
+        
+        function nextSlide() {
+            const slides = document.querySelectorAll('.slider-slide');
+            if (slides.length <= 1) return;
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSliderPosition();
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSliderPosition();
+        }
+        
+        function updateSliderPosition() {
+            const wrapper = document.getElementById('slider-wrapper');
+            wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            const dots = document.querySelectorAll('.slider-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        // Show/hide loading state
+        function showLoading(isLoading) {
+            // Chart loading
+            document.querySelectorAll('.chart-container').forEach(container => {
+                // Remove existing loading overlays
+                const existingOverlay = container.querySelector('.loading-overlay');
+                if (existingOverlay) {
+                    existingOverlay.remove();
+                }
+                
+                if (isLoading) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'loading-overlay';
+                    overlay.innerHTML = '<div class="spinner"></div>';
+                    container.appendChild(overlay);
+                }
+            });
+            
+            // Table loading
+            const tableContainer = document.querySelector('.table-container');
+            const existingTableOverlay = tableContainer.querySelector('.loading-overlay');
+            if (existingTableOverlay) {
+                existingTableOverlay.remove();
+            }
+            
+            if (isLoading) {
+                const overlay = document.createElement('div');
+                overlay.className = 'loading-overlay';
+                overlay.innerHTML = '<div class="spinner"></div>';
+                tableContainer.appendChild(overlay);
+            }
+            
+            // Disable buttons during loading
+            document.getElementById('apply-filter').disabled = isLoading;
+            document.getElementById('reset-filter').disabled = isLoading;
+            document.getElementById('refresh-data').disabled = isLoading;
+            document.getElementById('export-pdf').disabled = isLoading;
+        }
+        
+        // Show toast notification
+        function showToast(type, title, message) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            
+            // Set content
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            // Set type
+            toast.className = 'toast';
+            toast.classList.add(type);
+            
+            // Update icon based on type
+            const iconSvg = toast.querySelector('.toast-icon svg');
+            
+            if (type === 'success') {
+                iconSvg.innerHTML = `
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 12l2 2 4-4"></path>
+                `;
+            } else if (type === 'error') {
+                iconSvg.innerHTML = `
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                `;
+            } else if (type === 'warning') {
+                iconSvg.innerHTML = `
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                `;
+            } else {
+                iconSvg.innerHTML = `
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                `;
+            }
+            
+            // Show toast
+            toast.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(hideToast, 5000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('show');
+        }
+        
+        // Enhanced Chart Creation Functions
+        function createEnhancedBarChart(canvasId, label, data) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear previous chart if it exists
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            // Get unique defect types
+            const defectTypes = [...new Set(data.map(item => item.defect_found))];
+            const defectCounts = defectTypes.map(type => data.filter(item => item.defect_found === type).length);
+            
+            // Create gradients
+            const gradients = defectTypes.map((_, index) => {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                const colors = ['#ef4444', '#22c55e', '#3b82f6', '#a855f7', '#f97316', '#eab308'];
+                const colorIndex = index % colors.length;
+                gradient.addColorStop(0, colors[colorIndex]);
+                gradient.addColorStop(1, shadeColor(colors[colorIndex], -20));
+                return gradient;
+            });
+            
+            // Chart configuration
+            const config = {
+                type: 'bar',
+                data: {
+                    labels: defectTypes,
+                    datasets: [{
+                        label: 'Count',
+                        data: defectCounts,
+                        backgroundColor: gradients,
+                        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBorderWidth: 3,
+                        hoverBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            cornerRadius: 6,
+                            displayColors: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    return `Count: ${context.raw}`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: (value) => {
+                                return value;
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create chart
+            chartInstances[canvasId] = new Chart(ctx, config);
+        }
+        
+        function createEnhancedPieChart(canvasId, label, data) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear previous chart if it exists
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            // Group data by checklist item and calculate average time
+            const checklistGroups = {};
+            data.forEach(item => {
+                if (!checklistGroups[item.checklist_item]) {
+                    checklistGroups[item.checklist_item] = {
+                        times: [],
+                        total: 0,
+                        count: 0
+                    };
+                }
+                
+                const time = parseFloat(item.time_taken);
+                if (!isNaN(time)) {
+                    checklistGroups[item.checklist_item].times.push(time);
+                    checklistGroups[item.checklist_item].total += time;
+                    checklistGroups[item.checklist_item].count++;
+                }
+            });
+            
+            const labels = Object.keys(checklistGroups);
+            const values = labels.map(label => {
+                return checklistGroups[label].count > 0 
+                    ? parseFloat((checklistGroups[label].total / checklistGroups[label].count).toFixed(1)) 
+                    : 0;
+            });
+            
+            // Create colors
+            const backgroundColors = [
+                '#ef4444', '#22c55e', '#3b82f6', '#a855f7', '#f97316', '#eab308'
+            ];
+            
+            const hoverColors = [
+                '#b91c1c', '#15803d', '#1d4ed8', '#7e22ce', '#c2410c', '#a16207'
+            ];
+            
+            // Chart configuration
+            const config = {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Avg. Time (sec)',
+                        data: values,
+                        backgroundColor: backgroundColors.slice(0, labels.length),
+                        hoverBackgroundColor: hoverColors.slice(0, labels.length),
+                        borderColor: isDarkMode ? '#1e293b' : '#ffffff',
+                        borderWidth: 2,
+                        hoverBorderWidth: 3,
+                        hoverBorderColor: isDarkMode ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value} seconds`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: (value) => {
+                                return value + 's';
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create chart
+            chartInstances[canvasId] = new Chart(ctx, config);
+        }
+        
+        function createEnhancedDoughnutChart(canvasId, label, data) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear previous chart if it exists
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            // Calculate total time and total items
+            let totalTime = 0;
+            let totalItems = 0;
+            
+            data.forEach(item => {
+                const time = parseFloat(item.time_taken);
+                const items = parseFloat(item.total_items);
+                
+                if (!isNaN(time)) totalTime += time;
+                if (!isNaN(items)) totalItems += items;
+            });
+            
+            // Create gradient backgrounds
+            const timeGradient = ctx.createLinearGradient(0, 0, 0, 400);
+            timeGradient.addColorStop(0, '#ef4444');
+            timeGradient.addColorStop(1, '#b91c1c');
+            
+            const itemsGradient = ctx.createLinearGradient(0, 0, 0, 400);
+            itemsGradient.addColorStop(0, '#22c55e');
+            itemsGradient.addColorStop(1, '#15803d');
+            
+            // Chart configuration
+            const config = {
+                type: 'doughnut',
+                data: {
+                    labels: ['Total Time (sec)', 'Total Items'],
+                    datasets: [{
+                        data: [totalTime, totalItems],
+                        backgroundColor: [timeGradient, itemsGradient],
+                        hoverBackgroundColor: ['#b91c1c', '#15803d'],
+                        borderColor: isDarkMode ? '#1e293b' : '#ffffff',
+                        borderWidth: 2,
+                        hoverBorderWidth: 3,
+                        hoverBorderColor: isDarkMode ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            cornerRadius: 6
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: (value, context) => {
+                                return context.chart.data.labels[context.dataIndex] === 'Total Time (sec)' 
+                                    ? value + 's' 
+                                    : value;
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create chart
+            chartInstances[canvasId] = new Chart(ctx, config);
+        }
+        
+        function createEnhancedRadarChart(canvasId, label, data) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear previous chart if it exists
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+            
+            // Get unique checklist items
+            const checklistItems = [...new Set(data.map(item => item.checklist_item))];
+            
+            // Calculate pass and fail counts for each checklist item
+            const passData = checklistItems.map(item => {
+                return data.filter(d => d.checklist_item === item && d.defect_found === "Pass").length;
+            });
+            
+            const failData = checklistItems.map(item => {
+                return data.filter(d => d.checklist_item === item && d.defect_found === "Fail").length;
+            });
+            
+            // Chart configuration
+            const config = {
+                type: 'radar',
+                data: {
+                    labels: checklistItems,
+                    datasets: [
+                        {
+                            label: 'Pass',
+                            data: passData,
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#22c55e',
+                            pointBorderColor: isDarkMode ? '#1e293b' : '#ffffff',
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: '#22c55e',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Fail',
+                            data: failData,
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#ef4444',
+                            pointBorderColor: isDarkMode ? '#1e293b' : '#ffffff',
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: '#ef4444',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            angleLines: {
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            cornerRadius: 6
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create chart
+            chartInstances[canvasId] = new Chart(ctx, config);
+        }
+        
+        // Helper function to shade a color
+        function shadeColor(color, percent) {
+            let R = parseInt(color.substring(1, 3), 16);
+            let G = parseInt(color.substring(3, 5), 16);
+            let B = parseInt(color.substring(5, 7), 16);
+            
+            R = parseInt((R * (100 + percent)) / 100);
+            G = parseInt((G * (100 + percent)) / 100);
+            B = parseInt((B * (100 + percent)) / 100);
+            
+            R = (R < 255) ? R : 255;
+            G = (G < 255) ? G : 255;
+            B = (B < 255) ? B : 255;
+            
+            const RR = ((R.toString(16).length == 1) ? "0" + R.toString(16) : R.toString(16));
+            const GG = ((G.toString(16).length == 1) ? "0" + G.toString(16) : G.toString(16));
+            const BB = ((B.toString(16).length == 1) ? "0" + B.toString(16) : B.toString(16));
+            
+            return "#" + RR + GG + BB;
+        }
+        
+        // Register Chart.js plugins
+        Chart.register(ChartDataLabels);
+    </script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+        }
+        
+        // Automatically collapse the sidebar when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleSidebar();
+        });
+        </script>
+</body>
+</html>

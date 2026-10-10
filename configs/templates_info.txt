@@ -1,0 +1,8 @@
+1 None
+2 single
+3 cfr_circle
+4 cfr_rect
+5 pd
+6 red
+7 square
+8 west_lu

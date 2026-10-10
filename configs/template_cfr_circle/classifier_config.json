@@ -1,0 +1,202 @@
+{
+  "D10": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is downwards", "Ignore", "Not_Capacitor"]
+  ],
+  "R80": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "Q8": [
+    0,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R82": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "IC8": [
+    0,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not short",
+      "Not_Capacitor"
+    ]
+  ],
+  "C80": [0, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "R55": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R56": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "D2": [
+    90,
+    ["Not Missing", "Not Shifted", "Diode is downwards", "Ignore", "Not_Capacitor"]
+  ],
+  "C13": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Brown"]],
+  "C10": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Brown"]],
+  "C9": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "C1": [0, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "U2": [
+    0,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R26": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R19": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R21": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "D5": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is upwards", "Ignore", "Not_Capacitor"]
+  ],
+  "R17": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R23": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R10": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "D4": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is upwards", "Ignore", "Not_Capacitor"]
+  ],
+  "R14": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R15": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R11": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "C8": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "WHITE"]],
+  "R31": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R27": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R29": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R30": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R25": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "U1": [
+    0,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not short",
+      "Not_Capacitor"
+    ]
+  ],
+  "C12": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "R5": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R12": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R28": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R24": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R16": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R8": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R18": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "R13": [90, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "R81": [0, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "C81": [0, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "D11": [
+    90,
+    ["Not Missing", "Not Shifted", "Diode is downwards", "Ignore", "Not_Capacitor"]
+  ],
+  "D8": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is upwards", "Ignore", "Not_Capacitor"]
+  ],
+  "D9": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is upwards", "Ignore", "Not_Capacitor"]
+  ],
+  "R9": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "D1": [
+    0,
+    ["Not Missing", "Not Shifted", "Diode is downwards", "Ignore", "Not_Capacitor"]
+  ],
+  "R3": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R7": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "R6": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ],
+  "C3": [0, ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "YELLOW"]],
+  "R2": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Ignore", "Not_Capacitor"]
+  ]
+}

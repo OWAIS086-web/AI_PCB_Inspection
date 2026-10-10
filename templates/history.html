@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCB Defect Viewer</title>
+ <style>
+    /* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body and basic styling */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+  }
+  
+  #pcb-panel-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .frame-1d {
+    width: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  
+  .frame-1d:hover {
+    transform: scale(1.05);
+  }
+  
+  .frame-1e {
+    margin-bottom: 10px;
+  }
+  
+  .defect-uidk-23 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  #defect-info {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin-top: 20px;
+  }
+  
+  #defect-name {
+    font-size: 24px;
+    color: #d9534f;
+  }
+  
+  #checklist-item {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-top: 10px;
+  }
+  
+  .rectangle {
+    width: 100%;
+    height: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+  }
+  
+  #imageContainer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .image-wrapper {
+    width: 150px;
+    text-align: center;
+  }
+  
+  .defectImage {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .component-name {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  #image-display {
+    margin-top: 20px;
+    display: none;
+    text-align: center;
+  }
+  
+  #image-display img {
+    width: 80%;
+    height: auto;
+    border: 3px solid #ddd;
+    border-radius: 10px;
+  }
+  
+ </style>
+</head>
+<body>
+
+  <div id="pcb-panel-container">
+    <!-- PCB panels will be dynamically added here -->
+  </div>
+
+  <div id="defect-info">
+    <h2 id="defect-name">No Defect</h2>
+    <div id="checklist-item">No Defect</div>
+    <div id="defect-indicator" class="indicator"></div>
+    <div id="rectangle" class="rectangle"></div>
+    <p>Points: <span id="points">0</span></p>
+    <p>Checked Items: <span id="checked-items">0</span></p>
+    <p>Total Items: <span id="total-items">0</span></p>
+    <p>Time Taken: <span id="time-taken">0</span></p>
+  </div>
+
+  <div id="imageContainer" style="display: none;">
+    <!-- Images of defects will be dynamically added here -->
+  </div>
+
+  <div id="image-display">
+    <!-- Clicking on images will show the defect in a larger view -->
+  </div>
+
+  <img id="staticImage" src="" alt="Static PCB Image" style="display: none;">
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      setInterval(fetchDefectData, 10000); // Periodically fetch defect data every 10 seconds
+    });
+  
+    function updatePCBPanels(count) {
+      const container = document.getElementById('pcb-panel-container');
+      container.innerHTML = ''; // Clear existing content
+  
+      for (let i = 1; i <= count; i++) {
+        const frame = document.createElement('div');
+        frame.className = 'frame-1d';
+        frame.style.border = "1px solid #ccc";
+        frame.style.padding = "10px";
+        frame.style.margin = "10px";
+        frame.style.cursor = "pointer";
+        frame.style.display = "inline-block";
+  
+        const innerFrame = document.createElement('div');
+        innerFrame.className = 'frame-1e';
+  
+        const serialSpan = document.createElement('span');
+        serialSpan.className = 'defect-uidk-23';
+        serialSpan.textContent = `PCB-${i}`;
+  
+        innerFrame.appendChild(serialSpan);
+        frame.appendChild(innerFrame);
+        container.appendChild(frame);
+  
+        frame.addEventListener('click', () => {
+          setPCBValue(i);
+        });
+      }
+    }
+  
+    function setPCBValue(count) {
+      // Fetch related data
+      fetchDefectData(count);
+      fetchDetailData(count);
+      showDefectImages();
+    }
+  
+    async function fetchDefectData(pcbId) {
+      try {
+        const response = await fetch(`/fetch_defect_data/${pcbId}`);
+        const data = await response.json();
+        console.log('Fetched defect data:', data);
+        displayDefectData(data);
+      } catch (error) {
+        console.error('Error fetching defect data:', error);
+      }
+    }
+  
+    function displayDefectData(data) {
+      const defectMapping = {
+        "wrong_Values": "Wrong_Values",
+        "Capacitor_Color": "Capacitor_ColorPoints",
+        "Bridge": "bridgingShortPoints",
+        "IC_Direction": "wrongPolarityPoints",
+        "missing": "missingComponentPoints",
+        "Shifted": "ShiftedComponentsPoints"
+      };
+  
+      data.defects.forEach(defect => {
+        const type = defect.defect_type;
+        const count = defect.count;
+        const pointsElementId = defectMapping[type];
+        const element = document.getElementById(pointsElementId);
+  
+        if (element) {
+          element.innerText = count;
+        }
+      });
+    }
+  
+    function showDefectImages(defectType) {
+      const imageContainer = document.getElementById('imageContainer');
+      const staticImage = document.getElementById('staticImage');
+      const imageDisplay = document.getElementById('image-display');
+  
+      if (staticImage) {
+        staticImage.src = '';
+        console.log("Old static image cleared.");
+      }
+  
+      if (imageDisplay) {
+        imageDisplay.innerHTML = '';
+        imageDisplay.style.display = 'none';
+        console.log("Image display div cleared and hidden.");
+      }
+  
+      fetch(`/fetch_defect_data/${count}`)
+        .then(response => response.json())
+        .then(data => {
+          const defect = data.defects.find(d => d.defect_type === defectType);
+  
+          if (defect && defect.data.length > 0) {
+            imageContainer.innerHTML = '';
+            defect.data.forEach(item => {
+              const imageWrapper = document.createElement('div');
+              imageWrapper.classList.add('image-wrapper');
+  
+              const image = document.createElement('img');
+              image.src = `data:image/jpeg;base64,${item.image}`;
+              image.alt = `Component: ${item.Component}`;
+              image.classList.add('defectImage');
+              imageWrapper.appendChild(image);
+  
+              const componentName = document.createElement('div');
+              componentName.classList.add('component-name');
+              componentName.innerText = `Component: ${item.Component}`;
+              imageWrapper.appendChild(componentName);
+  
+              imageContainer.appendChild(imageWrapper);
+  
+              image.addEventListener('click', () => {
+                if (staticImage) {
+                  staticImage.src = image.src;
+                  console.log("Static image updated with new one.");
+                }
+  
+                if (imageDisplay) {
+                  imageDisplay.innerHTML = '';
+                  imageDisplay.style.display = 'none';
+                  console.log("Image display div cleared and hidden after clicking an image.");
+                }
+              });
+            });
+  
+            imageContainer.style.display = 'flex';
+          } else {
+            imageContainer.style.display = 'none';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching defect data for images:', error);
+          imageContainer.style.display = 'none';
+        });
+    }
+  
+    async function fetchDetailData(pcbId) {
+      try {
+        const response = await fetch(`/fetch_defect_data/${pcbId}`);
+        const data = await response.json();
+        console.log('Fetched detail data:', data);
+        updateContent(data);
+        updateDefectStatus(data.defectFound, data.checklistItem);
+      } catch (error) {
+        console.error('Error fetching detail data:', error);
+      }
+    }
+  
+    function updateContent(data) {
+      document.getElementById("checklist-item").textContent = `Defect in ${data.checklistItem}`;
+      document.getElementById("points").textContent = data.points;
+      document.getElementById("checked-items").textContent = data.checkedItems;
+      document.getElementById("total-items").textContent = data.totalItems;
+      document.getElementById("defect-name").textContent = data.defectFound;
+      document.getElementById("time-taken").textContent = data.timeTaken;
+    }
+  
+    function updateDefectStatus(defectFound, checklistItem) {
+      const indicator = document.getElementById('defect-indicator');
+      const checklistItemElement = document.getElementById('checklist-item');
+      const defectUidk = document.getElementById('defect-uidk');
+      const rectangle = document.getElementById('rectangle');
+  
+      if (defectFound && defectFound !== "") {
+        indicator.style.backgroundColor = "red";
+        checklistItemElement.style.backgroundColor = "red";
+        checklistItemElement.style.color = "white";
+        defectUidk.textContent = "Defect Found";
+        rectangle.style.backgroundColor = "#fe1a3d";
+        checklistItemElement.textContent = `Defect in ${checklistItem}`;
+      } else {
+        indicator.style.backgroundColor = "green";
+        checklistItemElement.style.backgroundColor = "green";
+        checklistItemElement.style.color = "white";
+        defectUidk.textContent = "No Defect";
+        rectangle.style.backgroundColor = "green";
+        checklistItemElement.textContent = "No Defect";
+      }
+    }
+  </script>
+  
+</body>
+</html>

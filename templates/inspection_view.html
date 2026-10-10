@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> Inspection page</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
+   
+<style>
+  /* Styling for horizontal image layout and display section */
+  .pcb-image {
+    width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0;
+  position: absolute;
+  top: -13%;
+  left: -33%;
+}
+  .image-row-container {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 16px;
+    position: relative;
+    padding: 10px 0;
+    z-index: 113;
+    width: 92%;
+    overflow-x: auto;
+    overflow-y: auto;
+    margin-left: 6%;
+    top: 20px;
+  
+  }
+
+  .image-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .defectImage {
+    max-width: 100px;
+    height: auto;
+    cursor: pointer;
+    padding-top: 20px;
+  }
+
+  .component-name {
+    font-size: 12px;
+    color: #333;
+    margin-top: 5px;
+  }
+  video {
+    width: 100%;
+    height: 50%;
+  }
+</style>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="rectangle-backup"></div>
+      <div class="side-navigation">
+        <div class="group"></div>
+        <button class="navigation-analytics" onclick="window.location.href='{{ url_for('index') }}'">
+          <div class="d-cube"></div>
+      </button>
+      
+        <button class="navigation-analytics-1" onclick="window.location.href='{{ url_for('setting') }}'">
+          <div class="settings-gear"></div>
+        </button>
+        <button class="navigation-analytics-2" onclick="window.location.href='{{ url_for('logout') }}'" ><div class="subtract"></div></button>
+        
+      </div>
+     <!-- Buttons for Steam and Inspection -->
+
+     <button class="frame" id="start-inspection" disabled>
+      <span class="start-searching">Start Inspection</span>
+  </button>
+  
+  <button class="frame-4" id="start-steam">
+      <span class="start-searching-5">Start Steam</span>
+  </button>
+  <button class="download_button"onclick="downloadImage()">Verification</button>
+      <span class="batch-inspection-details"
+        >Batch#11233-44 Inspection Details</span>
+      <span class="pcb-batch">PCB Batch Number | PCB Type</span>
+
+      <!-- right hand side defect view  -->
+    <!-- HTML structure for static image and video -->
+    <div class="rectangle-backup-6">
+      <span class="detection-view">Detection View</span>
+      <div class="vector"></div>
+  
+      <div class="group-7"> 
+        <img id="staticImage" src="captured_image.jpg" alt="detection view">
+          <div id="image-display" class="group-7"></div>
+          <!-- Video element for steam -->
+          <video id="video" style="display:none;" controls>
+              <source src="static/videos/video.mp4" type="video/mp4">
+          </video>
+      </div>
+  </div>
+      <!-- right hand side defect view  end  -->
+
+
+<!-- left hand side start -->
+<div class="rectangle-backup-8">
+  <div class="rectangle-backup-9">
+    <span class="defect-checklist-item" id="checklist-item"> Waiting [Checklist Item]</span>
+  </div>
+  <div class="flex-row">
+    <span class="points" id="points">0%</span><span class="points-a" id="checked-items">0</span>
+    <span class="points-b" id="total-items">0</span>
+    <button class="rectangle-backup-c">
+      <span class="total-completion">Total Completion</span>
+    </button>
+    <button class="rectangle-backup-d">
+      <span class="total-items-checked">Total Items Checked</span>
+    </button>
+    <button class="rectangle-backup-e">
+      <span class="total-seconds-spent">Total Seconds Spent</span>
+    </button>
+  </div>
+</div>
+
+<div class="rectangle-backup-f">
+  <div class="vector-10"></div>
+  <div class="frame-11">
+    <div class="frame-12">
+      <div class="flex-row-d" id="flex-row-d">
+        <div class="frame-13"></div>
+        <div class="rectangle" id="rectangle"></div> <!-- This is the div you want to change color for -->
+        <div class="rectangle-14"></div>
+      </div>
+      <div class="flex-row-f">
+        <span class="defect-uidk" id="defect-uidk"> waiting</span>
+        
+        <div class="vector-15"></div>
+        <div class="defect">
+          <div class="defect-name">
+            <div class="defect-16">
+              <div class="defect-name-17">
+                <div class="frame-18">
+                  <div class="indicator" id="defect-indicator"></div> <!-- Add indicator element -->
+                </div>
+              </div>
+            </div>
+            <span class="defect-uidk-19" id="defect-name">[Checklist Item]</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex-row-ac">
+        <span class="defect-uidk-1a">Time Taken:</span><span class="defect-uidk-1b" id="time-taken"> waiting</span>
+      </div>
+    </div>
+  </div>
+<!-- left end part of defect time etc end -->
+
+
+<!-- PCB-Panel list -->
+<div id="pcb-panel-container" class="frame-1c"></div>
+<!-- end of PCB-Panel list -->
+
+</div>
+   <!-- end of this part      -->
+
+
+ <!-- Whole Panel Defects Section -->
+
+<div class="frame-4f">
+  <div class="frame-50">
+    <span class="whole-panel-defects">Whole panel defects</span>
+    <div class="frame-51">
+      <!-- Defect items -->
+      <div class="frame-52" onclick="showDefectImages('Capacitor_Color')">
+        <div class="frame-53">
+          <div class="rectangle-backup-54"></div>
+          <span class="span-points" id="Capacitor_ColorPoints">0</span>
+          <span class="span-wrong-values">Capacitor Color</span>
+        </div>
+      </div>
+
+      <div class="frame-55" onclick="showDefectImages('Bridge')">
+        <div class="frame-56">
+          <div class="rectangle-backup-57"></div>
+          <span class="span-points" id="bridgingShortPoints">0</span>
+          <span class="span-bridging-short">Bridging / Short</span>
+        </div>
+      </div>
+
+      <div class="frame-59" onclick="showDefectImages('IC_Direction')">
+        <div class="frame-5a">
+          <div class="rectangle-backup-5b"></div>
+          <span class="span-points" id="wrongPolarityPoints">0</span>
+          <span class="span-wrong-polarity">Wrong Polarity</span>
+        </div>
+      </div>
+
+      <div class="frame-5d" onclick="showDefectImages('missing')">
+        <div class="frame-5e">
+          <div class="rectangle-backup-5f"></div>
+          <span class="span-points" id="missingComponentPoints">0</span>
+          <span class="span-missing-component">Missing Component</span>
+        </div>
+      </div>
+
+      <div class="frame-61" onclick="showDefectImages('wrong_Values')">
+        <div class="frame-62">
+          <div class="rectangle-backup-63"></div>
+          <span class="span-points" id="Wrong_Values">0</span>
+          <span class="span-excessive-soldering">Wrong Values</span>
+        </div>
+      </div>
+
+      <div class="frame-61" onclick="showDefectImages('Shifted')">
+        <div class="frame-62">
+          <div class="rectangle-backup-63"></div>
+          <span class="span-points" id="ShiftedComponentsPoints">0</span>
+          <span class="span-excessive-soldering">Shifted Components</span>
+        </div>
+      </div>
+
+      <div class="frame-61" onclick="showDefectImages('Dry_Solder')">
+        <div class="frame-62">
+          <div class="rectangle-backup-63"></div>
+          <span class="span-points" id="DrySolderComponent">0</span>
+          <span class="span-excessive-soldering">Dry Solder</span>
+        </div>
+      </div>
+    </div>
+    <div id="imageContainer" class="image-row-container" style="display: none;"></div>
+  </div>
+</div>
+</div>
+
+<script>
+  async function downloadImage() {
+      const imgElement = document.getElementById("staticImage");
+  
+      if (!imgElement || !imgElement.src) {
+          alert("No image found!");
+          return;
+      }
+      
+  
+      try {
+          // Ask user for defect details
+          const defectType = prompt("Enter defect type (e.g., Component: R24, Component: R26, Component: R22):", "Component: R21");
+          if (!defectType) return alert("Defect type is required!");
+  
+          const confidence = prompt("Enter confidence level (0.0 - 1.0):", "0.95");
+          if (!confidence || isNaN(confidence) || confidence < 0 || confidence > 1) {
+              return alert("confidence value! Enter a number between 0.0 and 1.0.");
+          }
+  
+          const remarks = prompt("Enter remarks (optional):", "like wrong detection etc");
+  
+          // Convert image to Base64
+          const response = await fetch(imgElement.src);
+          const blob = await response.blob();
+  
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = async function () {
+              const base64Data = reader.result;
+  
+              // Send to backend
+              const result = await fetch("/save-image", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                      imageData: base64Data,
+                      defectType: defectType,
+                      confidence: parseFloat(confidence),
+                      remarks: remarks,
+                  }),
+              });
+  
+              const data = await result.json();
+              alert(data.message || "Error occurred");
+          };
+      } catch (error) {
+          console.error("Error downloading image:", error);
+      }
+  }
+  </script>
+<script>
+  // Function to continuously check the status every second
+  function checkStatus() {
+      fetch('/status')
+          .then(response => response.json())
+          .then(data => {
+              const alignStatus = data.allign_status;
+              const isSteamActive = data.is_steam_active;
+              const popup = document.getElementById('popup');
+              const startInspectionButton = document.getElementById('start-inspection');
+              const startSteamButton = document.getElementById('start-steam');
+              const staticImage = document.getElementById('staticImage');
+              const videoElement = document.getElementById('video');
+              const imageDisplay = document.getElementById('image-display');
+              const detectionView = document.querySelector('.detection-view');
+              const group7 = document.querySelector('.group-7');
+
+              // Handle the alignment status
+              if (alignStatus === false) {
+                  startInspectionButton.disabled = true;  // Disable the button
+                  startInspectionButton.style.backgroundColor = 'red';  // Set to red
+              } else if (alignStatus === true) {
+                  startInspectionButton.disabled = false;  // Enable the button
+                  startInspectionButton.style.backgroundColor = 'green';  // Set to green
+              }
+
+              // Handle the start steam button: enable/disable based on is_steam_active
+              if (isSteamActive === false) {
+                  startSteamButton.disabled = true;  // Disable the button
+                  startSteamButton.style.backgroundColor = 'red';  // Set to red
+              } else if (isSteamActive === true) {
+                  startSteamButton.disabled = false;  // Enable the button
+                  startSteamButton.style.backgroundColor = 'green';  // Set to green
+              }
+
+              // Show Steam Video when Steam is activated
+              if (isSteamActive === true) {
+                  staticImage.style.display = 'none';  // Hide the static image
+                  videoElement.style.display = 'block'; // Show the video stream
+                  videoElement.play();  // Start the video
+                  imageDisplay.style.display = 'none'; // Hide the image display
+                  detectionView.textContent = 'Steam Mode'; // Change detection view text
+                  group7.style.backgroundColor = '#f0f0f0'; // Adjust background color for steam mode
+              }
+
+              // Automatically check status every second
+          })
+          .catch(error => console.error('Error fetching status:', error));
+  }
+
+  // Handle start inspection button click
+  document.getElementById('start-inspection').addEventListener('click', function() {
+      alert('Starting Inspection...');
+      const steamContainer = document.getElementById('steam-container');
+      const staticImage = document.getElementById('staticImage');
+      const videoElement = document.getElementById('video');
+      const imageDisplay = document.getElementById('image-display');
+      const detectionView = document.querySelector('.detection-view');
+      const group7 = document.querySelector('.group-7');
+
+      // Switch to Inspection View (show static image and stop the video)
+      staticImage.style.display = 'block'; // Show the static image
+      videoElement.style.display = 'none'; // Hide the video stream
+      imageDisplay.style.display = 'block'; // Show the image display
+      detectionView.textContent = 'Detection View'; // Reset text for inspection mode
+      group7.style.backgroundColor = ''; // Reset background color to default
+      videoElement.pause(); // Pause the video if it was playing
+
+      // Trigger the inspection route
+      fetch('/start_inspection')
+          .then(response => response.json())
+          .then(data => {
+              console.log("Inspection started!");
+          });
+  });
+
+  // Handle start steam button click
+  document.getElementById('start-steam').addEventListener('click', function() {
+      fetch('/start-steam')  // You'll need to handle this route in Flask
+          .then(response => response.json())
+          .then(data => {
+              console.log('Steam started');
+              // Logic to show steam video and remove steam button can go here
+              const videoElement = document.getElementById('video');
+              const staticImage = document.getElementById('staticImage');
+              const imageDisplay = document.getElementById('image-display');
+              const detectionView = document.querySelector('.detection-view');
+              const group7 = document.querySelector('.group-7');
+
+              // Switch to Steam Mode (show the video and hide the image)
+              staticImage.style.display = 'none';
+              videoElement.style.display = 'block';
+              imageDisplay.style.display = 'none';
+              videoElement.play();  // Start the video stream
+              detectionView.textContent = 'Steam Mode'; // Change the view label
+              group7.style.backgroundColor = '#f0f0f0'; // Change background for steam mode
+          });
+  });
+
+  // Continuously check status every 1 second (setInterval will do this)
+  setInterval(checkStatus, 1000);
+</script>
+
+<script>
+  let PCB = "PCB_0";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    fetchDefectData(PCB);
+    fetchDetailData(PCB);
+  });
+
+  async function fetchDefectData(pcb) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/results/Panel_1/${pcb}/defects.json`);
+      const data = await response.json();
+      console.log('Fetched defect data:', data);
+      displayDefectData(data);
+    } catch (error) {
+      console.error('Error fetching defect data:', error);
+    }
+  }
+
+  function displayDefectData(data) {
+    const defectMapping = {
+      "wrong_Values": "Wrong_Values",
+      "Capacitor_Color": "Capacitor_ColorPoints",
+      "Bridge": "bridgingShortPoints",
+      "IC_Direction": "wrongPolarityPoints",
+      "missing": "missingComponentPoints",
+      "Shifted": "ShiftedComponentsPoints",
+      "Dry_Solder": "DrySolderComponent"
+    };
+
+    data.defects.forEach(defect => {
+      const type = defect.defect_type;
+      const count = defect.count;
+      const pointsElementId = defectMapping[type];
+      const element = document.getElementById(pointsElementId);
+
+      if (element) {
+        element.innerText = count;
+      }
+    });
+  }
+
+  function showDefectImages(defectType) {
+    const imageContainer = document.getElementById('imageContainer');
+    const staticImage = document.getElementById('staticImage');
+    const imageDisplay = document.getElementById('image-display');
+
+    if (staticImage) {
+      staticImage.src = '';
+      console.log("Old static image cleared.");
+    }
+
+    if (imageDisplay) {
+      imageDisplay.innerHTML = '';
+      imageDisplay.style.display = 'none';
+      console.log("Image display div cleared and hidden.");
+    }
+
+    fetch(`http://127.0.0.1:5000/results/Panel_1/${PCB}/defects.json`)
+      .then(response => response.json())
+      .then(data => {
+        const defect = data.defects.find(d => d.defect_type === defectType);
+
+        if (defect && defect.data.length > 0) {
+          imageContainer.innerHTML = '';
+          defect.data.forEach(item => {
+            const imageWrapper = document.createElement('div');
+            imageWrapper.classList.add('image-wrapper');
+
+            const image = document.createElement('img');
+            image.src = `data:image/jpeg;base64,${item.image}`;
+            image.alt = `Component: ${item.Component}`;
+            image.classList.add('defectImage');
+            imageWrapper.appendChild(image);
+
+            const componentName = document.createElement('div');
+            componentName.classList.add('component-name');
+            componentName.innerText = `Component: ${item.Component}`;
+            imageWrapper.appendChild(componentName);
+
+            imageContainer.appendChild(imageWrapper);
+
+            image.addEventListener('click', () => {
+              if (staticImage) {
+                staticImage.src = image.src;
+                console.log("Static image updated with new one.");
+              }
+
+              if (imageDisplay) {
+                imageDisplay.innerHTML = '';
+                imageDisplay.style.display = 'none';
+                console.log("Image display div cleared and hidden after clicking an image.");
+              }
+            });
+          });
+
+          imageContainer.style.display = 'flex';
+        } else {
+          imageContainer.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching defect data for images:', error);
+        imageContainer.style.display = 'none';
+      });
+  }
+
+  async function fetchDetailData(pcb) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/results/Panel_1/${pcb}/details.json`);
+      const data = await response.json();
+      console.log('Fetched detail data:', data);
+      updateContent(data);
+      updateDefectStatus(data.defectFound, data.checklistItem);
+    } catch (error) {
+      console.error('Error fetching detail data:', error);
+    }
+  }
+
+  function updateContent(data) {
+    document.getElementById("checklist-item").textContent = `Defect in ${data.checklistItem}`;
+    document.getElementById("points").textContent = data.points;
+    document.getElementById("checked-items").textContent = data.checkedItems;
+    document.getElementById("total-items").textContent = data.totalItems;
+    document.getElementById("defect-name").textContent = data.defectFound;
+    document.getElementById("time-taken").textContent = data.timeTaken;
+  }
+
+  function updateDefectStatus(defectFound, checklistItem) {
+    const indicator = document.getElementById('defect-indicator');
+    const checklistItemElement = document.getElementById('checklist-item');
+    const defectUidk = document.getElementById('defect-uidk');
+    const rectangle = document.getElementById('rectangle');
+
+    if (defectFound && defectFound !== "") {
+      indicator.style.backgroundColor = "red";
+      checklistItemElement.style.backgroundColor = "red";
+      checklistItemElement.style.color = "white";
+      defectUidk.textContent = "Defect Found";
+      rectangle.style.backgroundColor = "#fe1a3d";
+      checklistItemElement.textContent = `Defect in ${checklistItem}`;
+    } else {
+      indicator.style.backgroundColor = "green";
+      checklistItemElement.style.backgroundColor = "green";
+      checklistItemElement.style.color = "white";
+      defectUidk.textContent = "No Defect";
+      rectangle.style.backgroundColor = "green";
+      checklistItemElement.textContent = "No Defect";
+    }
+  }
+
+  const imagePaths = [
+  "{{ url_for('static', filename='test/IMG_6370.JPG') }}",
+];
+
+   let pcbPanels = [];
+
+// Initialize UI components
+const container = document.getElementById('pcb-panel-container');
+const imageDisplay = document.getElementById('image-display');
+const staticImage = document.getElementById('staticImage');
+
+// Fetch defect data from Flask server
+async function fetchPCBData() {
+  try {
+    const response = await fetch('/get_defects');
+    const data = await response.json();
+    console.log('Fetched defect data:', data);
+
+    const pcbCount = parseInt(data.PCB.split('_')[1], 10); // Extract PCB count
+    updatePCBPanels(pcbCount);
+  } catch (error) {
+    console.error('Error fetching defect data:', error);
+  }
+}
+
+// Update pcbPanels array with serial numbers
+function updatePCBPanels(count) {
+  pcbPanels = [];
+  for (let i = 1; i <= count; i++) {
+    pcbPanels.push({
+      serialNumber: i.toString(),
+      imagePath: imagePaths[0],
+      className: "defect-uidk-23"
+    });
+  }
+
+  // Re-render the container with the updated panels
+  renderPCBPanels();
+}
+
+// Render PCB panels
+function renderPCBPanels() {
+  container.innerHTML = ''; // Clear existing content
+
+  pcbPanels.forEach((panel, index) => {
+    const frame = document.createElement('div');
+    frame.className = 'frame-1d';
+
+    const innerFrame = document.createElement('div');
+    innerFrame.className = 'frame-1e';
+
+    const serialSpan = document.createElement('span');
+    serialSpan.className = panel.className;
+    serialSpan.textContent = `PCB-${panel.serialNumber}`;
+
+    innerFrame.appendChild(serialSpan);
+    frame.appendChild(innerFrame);
+    container.appendChild(frame);
+
+    frame.addEventListener('click', () => {
+      sessionStorage.setItem('imagesDisplayed', index + 1);
+      location.reload();
+    });
+  });
+}
+
+// Display images for the given count
+function displayImages(count) {
+  setPCBValue(count);
+  imageDisplay.innerHTML = '';
+
+  if (staticImage) {
+    staticImage.src = '';
+  }
+
+  pcbPanels.slice(0, count).forEach(panel => {
+    const img = document.createElement('img');
+    img.src = panel.imagePath;
+    img.alt = `PCB ${panel.serialNumber} image`;
+    img.className = 'pcb-image';
+    imageDisplay.appendChild(img);
+  });
+}
+
+// Set the PCB value for further operations
+function setPCBValue(count) {
+  PCB = `PCB_${count}`;
+  console.log(`PCB value set to ${PCB}`);
+  fetchDefectData(PCB); // Assumes fetchDefectData function is defined elsewhere
+  fetchDetailData(PCB); // Assumes fetchDetailData function is defined elsewhere
+}
+
+// Periodically fetch PCB data every 10 seconds
+setInterval(fetchPCBData, 10000);
+
+// Initial fetch on page load
+window.addEventListener('load', () => {
+  fetchPCBData();
+
+  // Handle stored session data for image display
+  const count = sessionStorage.getItem('imagesDisplayed');
+  if (count) {
+    displayImages(parseInt(count, 10));
+    sessionStorage.removeItem('imagesDisplayed');
+  }
+});
+
+
+</script>
+
+
+
+
+
+
+
+  </body>
+</html>

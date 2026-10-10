@@ -1,0 +1,29 @@
+{   
+    "backbone":{
+        "regnet_name":"facebook/regnet-y-040",
+        "head_conv":256,
+        "output_hidden_states":true
+    },
+    "neck":{
+        "in_channels":[128, 192, 512],
+        "out_channels":64,
+        "num_outs":3,
+        "attention":false
+    },
+    "heads":{"outs":{
+            "missing": 2, 
+            "shifted": 2, 
+            "ic_direction": 3, 
+            "bridge": 3, 
+            "capacitor_color": 5
+        },
+        "conv_dim":256
+        },
+    "upsample":{
+        "scales":[2, 4], 
+        "combine_upsample":3},
+
+    "cache_dir":"./weights",
+    "label_mapping": ["missing", "shifted", "ic_direction", "bridge", "capacitor_color"],
+    "device":"cuda"
+}

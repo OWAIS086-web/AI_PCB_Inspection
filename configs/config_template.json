@@ -1,0 +1,12 @@
+{
+  "status_inspection": false,
+  "template": "single",
+  "loading_mode": "manual",
+  "allign_status": false,
+  "template_pcbs_count": 3,
+  "serial_no": ["none"],
+  "is_barcode_scanned": false,
+  "next_panel": false,
+  "image_paths": [],
+  "pcb_counter": 0
+}

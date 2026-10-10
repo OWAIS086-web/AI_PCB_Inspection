@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visionrd Inspection Settings</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" />
+    <style>
+        :root {
+
+            --circuit-bg: #001214;
+            --circuit-trace: #00ffff;
+            --circuit-glow: rgba(0, 255, 255, 0.5);
+            --circuit-node: #00ffff;
+            
+            /* Form Colors */
+            --form-bg: rgba(255, 255, 255, 0.95);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: rgba(0, 255, 255, 0.3);
+            --input-focus: #00ffff;
+            --button-bg: #00ffff;
+            --button-hover: #00cccc;
+            --text-dark: #001214;
+            --text-light: #666;
+            /* Color Variables */
+            --primary-bg: #f4f6f9;
+            --white: #ffffff;
+            --light-gray: #f9f9fb;
+            --medium-gray: #e9e9ed;
+            --dark-gray: #333;
+            --text-dark: #333;
+            --text-light: #666;
+            
+            /* Accent Colors */
+            --accent-red: #ec1111;
+            --accent-green: #45a049;
+            --accent-blue: #6e8efb;
+            --accent-purple: #bd00fc;
+            --accent-orange: #fe7c4b;
+            --accent-gold: #fcca00;
+            --accent-cyan: #00ffff;
+            
+            /* PCB Colors */
+            --pcb-green: #006400;
+            --pcb-gold: #FFD700;
+            
+            /* Gradient Colors */
+            --gradient-red: linear-gradient(135deg, #ec1111, #d01010);
+            --gradient-green: linear-gradient(135deg, #45a049, #388e3c);
+            --gradient-white: linear-gradient(135deg, #f9f9fb, #e9e9ed);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+         /* Alert Popup */
+         .alert-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--circuit-bg);
+            color: var(--circuit-trace);
+            border: 1px solid var(--circuit-trace);
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 0 20px var(--circuit-glow);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+
+        /* Circuit Board Background Animation - Subtle version for settings page */
+        .circuit-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.02;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        /* Main Container */
+        .main-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar content";
+        }
+        
+        /* Sidebar */
+        .side-navigation {
+            grid-area: sidebar;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #f9f9fb, #e9e9ed);
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 20;
+        }
+        
+        .group {
+            width: 44px;
+      height: 44px;
+      margin-bottom: 40px;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;}
+        
+        .navigation-analytics, 
+        .navigation-analytics-1, 
+        .navigation-analytics-2 {
+            width: 44px;
+            height: 44px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+        }
+        
+        .navigation-analytics-1 {
+            background: var(--accent-red);
+        }
+        
+        .navigation-analytics:hover, 
+        .navigation-analytics-2:hover {
+            background: rgba(236, 17, 17, 0.1);
+        }
+        
+        .d-cube, .a-cube, .settings-gear, .subtract {
+            width: 24px;
+            height: 24px;
+            color: var(--dark-gray);
+        }
+        
+        .navigation-analytics-1 .settings-gear {
+            color: var(--white);
+        }
+        
+        /* Content Area */
+        .ad {
+            grid-area: content;
+            display: flex;
+            margin-left: 0;
+            margin-right: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        /* Sidebar for Templates */
+        .sidebar {
+            width: 250px;
+            background: var(--white);
+            padding: 20px;
+            color: var(--text-dark);
+            min-height: 100vh;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            border-right: 1px solid var(--medium-gray);
+        }
+        
+        .sidebar h3 {
+            text-transform: uppercase;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        .sidebar ul li {
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: var(--light-gray);
+            font-weight: 500;
+        }
+        
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background: rgba(236, 17, 17, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar ul li.active {
+            background: var(--accent-red);
+            color: var(--white);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: var(--primary-bg);
+        }
+        
+        .main-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .image-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+        }
+        
+        .settings {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background: var(--light-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .setting-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .setting-row label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        select, input[type="number"], input[type="text"], .toggle {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            outline: none;
+            transition: all 0.3s ease;
+            background: var(--white);
+            min-width: 120px;
+        }
+        
+        select:hover, input[type="number"]:hover, input[type="text"]:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        select:focus, input[type="number"]:focus, input[type="text"]:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px rgba(236, 17, 17, 0.1);
+        }
+        
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .save-button {
+            background: var(--accent-red);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+        
+        .save-button:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(69, 160, 73, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .ad {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                max-height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--medium-gray);
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "content";
+            }
+            
+            .side-navigation {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0;
+                z-index: 100;
+            }
+            
+            .group {
+                display: none;
+            }
+            
+            .settings {
+                padding: 15px;
+            }
+            
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .setting-row label {
+                margin-bottom: 8px;
+            }
+            
+            select, input[type="number"], input[type="text"] {
+                width: 100%;
+            }
+        }
+          
+    .logo {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 40px;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo {
+        display: none;
+      }
+      
+    </style>
+</head>
+
+<body>
+    <!-- Circuit Board Background - Subtle version -->
+    <div class="circuit-background">
+        <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+            <!-- Horizontal traces -->
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,100 H1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M0,300 H1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,500 H1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M0,700 H1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M0,900 H1000"></path>
+            
+            <!-- Vertical traces -->
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M100,0 V1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M300,0 V1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M500,0 V1000"></path>
+            <path stroke="#006400" stroke-width="2" fill="none" d="M700,0 V1000"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M900,0 V1000"></path>
+            
+            <!-- Angular traces -->
+            <path stroke="#006400" stroke-width="2" fill="none" d="M50,150 L150,150 L150,250 L250,250 L250,350 L350,350"></path>
+            <path stroke="#FFD700" stroke-width="2" fill="none" d="M650,150 L750,150 L750,250 L850,250 L850,350 L950,350"></path>
+            
+            <!-- IC chip patterns -->
+            <rect stroke="#006400" stroke-width="2" fill="none" x="400" y="400" width="200" height="200"></rect>
+            <rect stroke="#FFD700" stroke-width="2" fill="none" x="425" y="425" width="150" height="150"></rect>
+        </svg>
+    </div>
+
+    <div class="main-container">
+       
+        <!-- Sidebar Navigation -->
+        <div class="side-navigation">
+            <div class="group"  onclick="window.location.href='{{ url_for('index') }}'">
+            
+                    <img src="{{ url_for('static', filename='/images/Vector.svg') }}" alt="Logo" class="nav-logo">
+            </div>
+            <button class="navigation-analytics" onclick="window.location.href='{{ url_for('loading_pcb') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-cube">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </button>
+            <button class="navigation-analytics" onclick="window.location.href='{{ url_for('profile') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+            </button>
+            <button class="navigation-analytics" onclick="window.location.href='{{ url_for('admin_dashboard') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                  </svg>
+            </button>
+            <button class="navigation-analytics" onclick="window.location.href='{{ url_for('analytic') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="a-cube">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </button>
+            <button class="navigation-analytics-1" onclick="window.location.href='{{ url_for('setting') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-gear">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+            <button class="navigation-analytics-2" onclick="window.location.href='{{ url_for('logout') }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="subtract">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="ad">
+            <div class="sidebar">
+                <h3>PCB Templates</h3>
+                <ul id="templateList"></ul>
+                <button class="save-button" onclick="addNewTemplate()">Add New Template</button>
+            </div>
+        
+            <div class="main-content">
+                <h2>PCB Value Settings</h2>
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename='images/pcb.png') }}" alt="PCB Image" id="templateImage">
+                </div>
+                <div class="settings">
+                    <input type="hidden" id="templateId">
+        
+                    <div class="setting-row">
+                        <label>Resistor</label>
+                        <input type="number" id="resistor" value="4">
+                    </div>
+                    <div class="setting-row">
+                        <label>Resistor Inspection</label>
+                        <input type="checkbox" id="resistorInspection">
+                    </div>
+                    <div class="setting-row">
+                        <label>Tolerance</label>
+                        <input type="text" id="tolerance">
+                    </div>
+                    <div class="setting-row">
+                        <label>Capacitor Color</label>
+                        <select id="capacitorColor">
+                            <option>Brown</option>
+                            <option>Blue</option>
+                            <option>Black</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <label>Resistor Color</label>
+                        <select id="resistorColor">
+                            <option>Brown</option>
+                            <option>Red</option>
+                            <option>Green</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <label>Capacitor</label>
+                        <input type="number" id="capacitor" value="32">
+                    </div>
+                    <div class="setting-row">
+                        <label>Port</label>
+                        <input type="number" id="port" value="4">
+                    </div>
+                    <button class="save-button" onclick="saveSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert-popup" id="alert-popup">
+            {{ messages[0] }}
+        </div>
+        <script>
+            $(document).ready(function() {
+                $('#alert-popup').fadeIn().delay(3000).fadeOut();
+            });
+        </script>
+      {% endif %}
+    {% endwith %}
+    <script>
+        function loadTemplateList() {
+            fetch('/get_all_templates')
+                .then(response => response.json())
+                .then(templates => {
+                    const templateList = document.getElementById('templateList');
+                    templateList.innerHTML = '';
+                    templates.forEach(template => {
+                        const li = document.createElement('li');
+                        li.textContent = template;
+                        li.onclick = () => loadTemplateData(template);
+                        templateList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error loading templates:', error));
+        }
+
+        function loadTemplateData(templateId) {
+            fetch(`/get_template_data/${templateId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) return console.error('Error:', data.error);
+                    document.getElementById('templateId').value = templateId;
+                    document.getElementById('resistor').value = data.resistor;
+                    document.getElementById('tolerance').value = data.tolerance;
+                    document.getElementById('resistorInspection').checked = data.resistorInspection;
+                    document.getElementById('capacitorColor').value = data.capacitorColor;
+                    document.getElementById('resistorColor').value = data.resistorColor;
+                    document.getElementById('capacitor').value = data.capacitor;
+                    document.getElementById('port').value = data.port;
+                    document.getElementById('templateImage').src = `/static/images/${data.image}`;
+                })
+                .catch(error => console.error('Error fetching template data:', error));
+        }
+
+        function saveSettings() {
+            const templateId = document.getElementById('templateId').value;
+            const updatedTemplate = {
+                template_id: templateId,
+                resistor: document.getElementById('resistor').value,
+                tolerance: document.getElementById('tolerance').value,
+                resistorInspection: document.getElementById('resistorInspection').checked,
+                capacitorColor: document.getElementById('capacitorColor').value,
+                resistorColor: document.getElementById('resistorColor').value,
+                capacitor: document.getElementById('capacitor').value,
+                port: document.getElementById('port').value,
+                image: "updated_template_image.jpg"
+            };
+
+            fetch('/save_template', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedTemplate)
+            })
+            .then(response => response.json())
+            .then(() => loadTemplateList());
+        }
+
+        function addNewTemplate() {
+            document.getElementById('templateId').value = "";
+            saveSettings();
+        }
+
+        window.onload = loadTemplateList;
+    </script>
+
+</body>
+</html>

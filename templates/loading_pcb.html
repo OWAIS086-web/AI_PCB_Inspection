@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Inspector View Main Screen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Inspector application using Flask" />
+    <img
+      alt="Logo"
+      src="https://appproject.dhiwise.com/dhiwise-logo.png?c=&v="
+      style="width: 0px; height: 0px; display: none"
+    />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/2.css') }}" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      .custom-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+    
+      .custom-popup {
+        background: linear-gradient(135deg, #ffffff, #f0f0f0);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        width: 80%;
+      }
+    
+      .custom-popup button {
+        margin-top: 15px;
+        padding: 8px 16px;
+        border: none;
+        background-color: #ff0000;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    
+      .custom-popup button:hover {
+        background-color: #b30000;
+      }
+    </style>
+    <style>
+   
+      .detection-view {
+        max-width: 50%;
+        margin: 0 auto;
+        text-align: center;
+      }
+    
+
+      .owl-carousel .item img {
+        max-width: 100%; 
+        max-height: 100%; 
+        width: auto; 
+        height: auto; 
+      }
+    
+      .owl-carousel .item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px; 
+      }
+    
+ 
+      .fullscreen-img {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+        background-color: black;
+      }
+    </style>
+    <style>
+      .detection-view {
+          text-align: center;
+          position: relative;
+          width: 50%;
+          margin: auto;
+      }
+      .status-box {
+          position: absolute;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 10px;
+          color: white;
+          font-weight: bold;
+          border-radius: 5px;
+      }
+      video {
+          width: 100%;
+          height: auto;
+      }
+  </style>
+    
+  </head>
+  <body>
+    <div class="inspector-view-main">
+      <header class="nav">
+        <div class="rowheaderlogo">
+          <img src="{{ url_for('static', filename='images/Vector.svg') }}" alt="Headerlogo" class="headerlogo_one" />
+          <div class="rowthumbsup_one">
+            <div class="rownotifictioni">
+              <img src="{{ url_for('static', filename='images/img_notifictionicon.svg') }}" alt="Notifictionicon" class="notifictionicon" />
+              <p class="hello ui text size-textxs">Hello, Jean De Floret</p>
+            </div>
+            <a href="#">
+              <img src="{{ url_for('static', filename='images/img_thumbs_up.png') }}" alt="Thumbsup" class="thumbsup_one" />
+            </a>
+          </div>
+        </div>
+      </header>
+      <div class="newscreenbody">
+        <div class="rowadddetailsto">
+          <button class="header-button-right ">To Inspection Results</button>
+
+          <h1 class="adddetailsto ui heading size-headings">Loading Menu </h1>
+          <button class="header-button-left ">End Inspection</button>
+
+        </div>
+
+        <div class="main-content">
+          <div class="menu">
+            <div class="icon-section">
+              <img src="{{ url_for('static', filename='images/img_group_72.svg') }}" alt="Chip Icon">
+            </div>
+        
+            <div class="controls-section">
+              <h3 class="ui heading size-headingxs">Select Loading</h3>
+              <div class="toggle-container">
+                <span class="toggle-manual">Manual</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" name="loading_toggle" id="loading_toggle">
+                  <span class="slider"></span>
+                </label>
+                <span class="toggle-auto">Auto</span>
+              </div>
+        
+         
+              <button id="loadPcbButton">Load PCB</button>
+              <form id="uploadForm" style="display: none;" enctype="multipart/form-data">
+                <input type="file" id="pcbImages" name="pcbImages" multiple accept="image/*" webkitdirectory>
+              </form>
+
+              <button id="unloadPcbButton">Unload PCB</button>
+            </div>
+
+            <div class="start-inspection">
+              <button id="startInspectionButton">Start PCB Inspection</button>
+          </div>
+          </div>
+        
+          <div class="detection-view">
+            <div id="statusBox" class="status-box">Loading...</div>
+            <video controls autoplay loop>
+              <source src="http://127.0.0.1:5000/video.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+
+        </div>
+        
+        <div id="custom-alert" class="custom-overlay" style="display: none;">
+          <div class="custom-popup">
+            <span id="alert-message">Alert Message</span>
+            <button onclick="closeAlert()">OK</button>
+          </div>
+        </div>
+
+    
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script>
+    function checkStatus() {
+        fetch('http://127.0.0.1:5000/configs/status.json')
+            .then(response => response.json())
+            .then(data => {
+                const statusBox = document.getElementById('statusBox');
+                if (data.allign_status === true) {
+                    statusBox.textContent = "PCB is now Aligned";
+                    statusBox.style.backgroundColor = "green";
+                } else {
+                    statusBox.textContent = "PCB is Not Aligned";
+                    statusBox.style.backgroundColor = "red";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching status:', error);
+                document.getElementById('statusBox').textContent = "Error loading status";
+                document.getElementById('statusBox').style.backgroundColor = "gray";
+            });
+    }
+    
+    setInterval(checkStatus, 1000); 
+</script>
+  <script>
+    const loadPcbButton = document.getElementById('loadPcbButton');
+    const unloadPcbButton = document.getElementById('unloadPcbButton');
+    const pcbImagesInput = document.getElementById('pcbImages');
+    const owlCarousel = $('.owl-carousel');
+  
+    
+    owlCarousel.owlCarousel({
+      loop: false,
+      margin: 10,
+      nav: true,
+      items: 1, 
+    });
+  
+    let uploadedFiles = []; 
+  
+   
+    loadPcbButton.addEventListener('click', () => {
+      pcbImagesInput.click();
+    });
+  
+    pcbImagesInput.addEventListener('change', function () {
+      const formData = new FormData();
+      for (const file of pcbImagesInput.files) {
+        formData.append('pcbImages', file);
+      }
+  
+      fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            data.files.forEach((file) => {
+              uploadedFiles.push(file); 
+              owlCarousel.trigger('add.owl.carousel', [
+                `<div class="item"><img src="/uploads/${file}" alt="PCB"></div>`,
+              ]);
+            });
+            owlCarousel.trigger('refresh.owl.carousel');
+          } else {
+            alert('Error uploading images: ' + data.message);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert('An error occurred during the upload process.');
+        });
+    });
+  
+ 
+    unloadPcbButton.addEventListener('click', () => {
+      if (uploadedFiles.length === 0) {
+        alert('No images to unload.');
+        return;
+      }
+
+      fetch('/delete_all', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: uploadedFiles }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+            uploadedFiles = [];
+            owlCarousel.trigger('replace.owl.carousel', []).trigger('refresh.owl.carousel');
+            alert('All images have been unloaded and deleted successfully.');
+        } else {
+            alert('Error unloading images: ' + data.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+      window.location.reload();
+    });
+  </script>
+  
+  <script>
+    document.getElementById('loading_toggle').addEventListener('change', function () {
+      const loadingToggle = this.checked;
+      fetch('/switch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          loading_toggle: loadingToggle, 
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert('Loading mode updated successfully to ' + (loadingToggle ? 'auto' : 'manual'));
+          } else {
+            alert('Failed to update loading mode: ' + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('An error occurred while updating the loading mode.');
+        });
+    });
+
+    window.onload = function () {
+      fetch('/get_config')
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            const loadingToggle = document.getElementById('loading_toggle');
+            if (data.loading_mode === 'auto') {
+              loadingToggle.checked = true;
+            } else {
+              loadingToggle.checked = false;
+            }
+          } else {
+      
+            alert('Failed to fetch configuration: ' + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching config:', error);
+        });
+    };
+    
+  </script>
+  
+
+
+  <script>
+    $(document).ready(function() {
+        $("#startInspectionButton").click(function() {
+            window.location.href = "/inspection";
+
+            $.ajax({
+                url: '/start_inspection',
+                method: 'POST',
+                success: function(response) {
+                    console.log("Inspection started in the background.");
+                },
+                error: function(xhr) {
+                    console.error("Error starting inspection:", xhr.responseJSON.error);
+                }
+            });
+        });
+    });
+</script>
+
+
+</body>
+</html>

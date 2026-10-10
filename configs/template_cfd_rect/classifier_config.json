@@ -1,0 +1,214 @@
+{
+  "C15": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "C37": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "C38": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "C39": [0, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "WHITE"]],
+  "C40": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "R33": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "U4": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "L4": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "WHITE"]],
+  "L5": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "WHITE"]],
+  "Y1": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R50": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R39": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R46": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "Q5": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R22": [
+    0,
+    ["Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "D6": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "Diode is downwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R34": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R20": [
+    0,
+    ["Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "C19": [0, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "R38": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "D3": [
+    0,
+    [
+      "Missing",
+      "Not Shifted",
+      "Not an IC",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "C16": [0, ["Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]],
+  "R48": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R53": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "C11": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "C21": [90, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "Q6": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "RS1": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "C23": [0, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "R52": [
+    270,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R51": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "C22": [0, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "U3": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is downwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "C17": [0, ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "BROWN"]],
+  "R54": [
+    90,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "Q2": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R36": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R37": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R32": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R35": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "Q3": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R42": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R43": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R40": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R41": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "Q4": [
+    90,
+    [
+      "Not Missing",
+      "Not Shifted",
+      "IC is upwards",
+      "Not Short",
+      "Not_Capacitor"
+    ]
+  ],
+  "R44": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R47": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R45": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ],
+  "R49": [
+    0,
+    ["Not Missing", "Not Shifted", "Not an IC", "Not Short", "Not_Capacitor"]
+  ]
+}

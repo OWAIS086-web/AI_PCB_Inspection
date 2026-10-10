@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCB Inspection Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <style>
+    /* Custom Popup Styling - Positioned at the top of status-panel */
+    #popup-container {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .custom-popup {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 0;
+      width: 100%;
+      text-align: center;
+      animation: slideDown 0.3s ease-out;
+      overflow: hidden;
+    }
+    
+    .custom-popup h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      padding: 1rem;
+      color: var(--white);
+      background: var(--accent-blue);
+    }
+    
+    .custom-popup h2:first-child:not(:only-child) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    
+    .custom-popup h2:not(:first-child) {
+      background: var(--white);
+      color: var(--text-dark);
+      padding: 1.5rem 1rem;
+    }
+    
+    .custom-popup button {
+      background: var(--accent-blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1.5rem;
+      margin: 0.5rem 0 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .custom-popup button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    #countdown-timer {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      padding: 0.5rem;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* PCB Green and Gold colors for circuit background */
+    :root {
+      --pcb-green: #0a6e0a;
+      --pcb-gold: #ffd700;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    
+    #alignment-progress {
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      color: white;
+      transition: width 0.5s ease-in-out;
+    }
+  </style>
+  <style>
+    :root {
+      /* Color Variables */
+      --primary-bg: #f8fafc;
+      --white: #ffffff;
+      --light-gray: #f1f5f9;
+      --medium-gray: #e2e8f0;
+      --dark-gray: #1e293b;
+      --text-dark: #0f172a;
+      --text-light: #64748b;
+      
+      /* Accent Colors */
+      --accent-red: #ef4444;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-orange: #f97316;
+      --accent-gold: #eab308;
+      --accent-cyan: #06b6d4;
+      
+      /* Gradient Colors */
+      --gradient-red: linear-gradient(135deg, #f43f5e, #ef4444);
+      --gradient-green: linear-gradient(135deg, #10b981, #059669);
+      --gradient-white: linear-gradient(135deg, #ffffff, #f8fafc);
+      
+      /* Shadow Variables */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      /* Border Radius */
+      --radius-sm: 0.25rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background: var(--primary-bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Circuit Board Background Animation */
+    .circuit-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.05;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    
+    .circuit-path {
+      stroke: var(--pcb-green);
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawPath 15s linear infinite;
+    }
+    
+    .circuit-path-gold {
+      stroke: var(--pcb-gold);
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawPath 12s linear infinite;
+    }
+    
+    .circuit-node {
+      fill: var(--pcb-gold);
+      r: 3;
+      filter: drop-shadow(0 0 3px var(--pcb-gold));
+      animation: pulseNode 3s ease-in-out infinite;
+    }
+    
+    .circuit-node-green {
+      fill: var(--pcb-green);
+      r: 3;
+      animation: pulseNode 3s ease-in-out infinite;
+    }
+    
+    @keyframes drawPath {
+      0% {
+        stroke-dashoffset: 1000;
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        stroke-dashoffset: 0;
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes pulseNode {
+      0%, 100% {
+        opacity: 0.5;
+        r: 2;
+        filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
+      }
+      50% {
+        opacity: 1;
+        r: 4;
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+      }
+    }
+    
+    /* Status Panel Animation */
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    /* Main Container */
+    .main-container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        "sidebar header"
+        "sidebar content";
+    }
+    
+    /* Header */
+    .header {
+      grid-area: header;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--medium-gray);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .button-primary {
+      background: var(--accent-blue);
+    }
+    
+    .button-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .button-secondary {
+      background: var(--dark-gray);
+    }
+    
+    .button-secondary:hover {
+      background: #0f172a;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .button-tertiary {
+      background: #000;
+    }
+    
+    .button-tertiary:hover {
+      background: #333;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Sidebar */
+    .side-navigation {
+      grid-area: sidebar;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 0;
+      background: var(--dark-gray);
+      box-shadow: var(--shadow-md);
+      z-index: 20;
+    }
+    
+    .logo {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 2.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-button {
+      width: 44px;
+      height: 44px;
+      margin: 0.625rem 0;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
+    }
+    
+    .nav-button.active {
+      background: var(--accent-blue);
+    }
+    
+    .nav-button:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--white);
+    }
+    
+    /* Content Area */
+    .content {
+      grid-area: content;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      grid-template-rows: auto auto auto;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+    
+    /* Status Panel */
+    .status-panel {
+      grid-column: 1;
+      grid-row: 1;
+      background-color: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .status-panel:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .defect-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-lg);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.25rem;
+      background: var(--gradient-red);
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .defect-status.no-defect {
+      background: var(--gradient-green);
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-box {
+      background: var(--light-gray);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-box:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-light);
+    }
+    
+    /* PCB Panel List */
+    .pcb-panel-container {
+      grid-column: 1;
+      grid-row: 2;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+    
+    .pcb-panel-container:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .panel-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 0.75rem;
+    }
+    
+    .pcb-panel {
+      background: var(--light-gray);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transform: scale(1);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pcb-panel:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-md);
+      background: var(--medium-gray);
+    }
+    
+    .pcb-panel.active {
+      background: var(--accent-blue);
+      color: var(--white);
+    }
+    
+    .pcb-panel-label {
+      font-weight: 600;
+    }
+    
+    /* Detection View */
+    .detection-view-panel {
+      grid-column: 2;
+      grid-row: 1 / span 2; /* Span across rows 1 and 2 */
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      min-height: 500px;
+    }
+    
+    .detection-view-panel:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .detection-view-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .image-display {
+      width: 100%;
+      height: 500px;
+      background: var(--light-gray);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .image-display img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    /* Defects Panel */
+    .defects-panel {
+      grid-column: 1 / span 2; /* Span across both columns */
+      grid-row: 3; /* Move to row 3 (below PCB panel) */
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      overflow-y: auto;
+    }
+    
+    .defects-panel:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .defects-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .defects-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .defect-card {
+      background: var(--light-gray);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .defect-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      background: var(--medium-gray);
+    }
+    
+    .defect-indicator {
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      margin-bottom: 0.75rem;
+    }
+    
+    .defect-indicator.color-1 { background: var(--accent-blue); }
+    .defect-indicator.color-2 { background: var(--accent-orange); }
+    .defect-indicator.color-3 { background: var(--accent-purple); }
+    .defect-indicator.color-4 { background: var(--accent-green); }
+    .defect-indicator.color-5 { background: var(--accent-gold); }
+    .defect-indicator.color-6 { background: var(--accent-red); }
+    
+    .defect-count {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .defect-count.color-1 { color: var(--accent-blue); }
+    .defect-count.color-2 { color: var(--accent-orange); }
+    .defect-count.color-3 { color: var(--accent-purple); }
+    .defect-count.color-4 { color: var(--accent-green); }
+    .defect-count.color-5 { color: var(--accent-gold); }
+    .defect-count.color-6 { color: var(--accent-red); }
+    
+    .defect-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-dark);
+    }
+    
+    .image-row-container {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding: 0.75rem 0;
+      scroll-behavior: smooth;
+    }
+    
+    .image-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .defect-image {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .defect-image:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .component-name {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      color: var(--text-light);
+    }
+    
+    /* Loader */
+    #loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #loader::after {
+      content: "";
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 6px solid var(--accent-blue);
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    #loader.active {
+      display: flex;
+    }
+    
+    /* Modal Popup for Download & Save */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      padding: 1rem 1.5rem;
+      background: var(--dark-gray);
+      color: var(--white);
+      border-top-left-radius: var(--radius-xl);
+      border-top-right-radius: var(--radius-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+    
+    .close-modal {
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .close-modal:hover {
+      color: var(--accent-red);
+      transform: scale(1.1);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+    }
+    
+    .defect-image-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--light-gray);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      min-height: 300px;
+    }
+    
+    .defect-image-container img {
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+    }
+    
+    .defect-options {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--light-gray);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+    
+    .checkbox-item:hover {
+      background: var(--medium-gray);
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+      accent-color: var(--accent-blue);
+    }
+    
+    .checkbox-item label {
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--medium-gray);
+    }
+    
+    .modal-button {
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      color: var(--white);
+    }
+    
+    .true-defect-btn {
+      background: var(--accent-green);
+    }
+    
+    .true-defect-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .false-defect-btn {
+      background: var(--accent-red);
+    }
+    
+    .false-defect-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Alert Popup */
+    .alert-popup {
+      display: none;
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--white);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      max-width: 300px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+      }
+      
+      .status-panel {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      
+      .detection-view-panel {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      
+      .pcb-panel-container {
+        grid-column: 1;
+        grid-row: 3;
+      }
+      
+      .defects-panel {
+        grid-column: 1;
+        grid-row: 4;
+      }
+      
+      .defects-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "content";
+      }
+      
+      .side-navigation {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+        z-index: 100;
+      }
+      
+      .logo {
+        display: none;
+      }
+      
+      .header {
+        padding: 0.75rem 1rem;
+      }
+      
+      .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+      }
+      
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .defects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .modal-body {
+        flex-direction: column;
+      }
+      
+      .content {
+        padding: 1rem;
+        padding-bottom: 70px; /* Add space for the bottom navigation */
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .content {
+        padding: 0.75rem;
+        gap: 0.75rem;
+      }
+      
+      .defect-status {
+        font-size: 1rem;
+        padding: 0.75rem;
+      }
+      
+      .stat-value {
+        font-size: 1.5rem;
+      }
+      
+      .stat-label {
+        font-size: 0.75rem;
+      }
+      
+      .defects-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .button {
+        width: 100%;
+      }
+      
+      .status-panel, .pcb-panel-container, .detection-view-panel, .defects-panel {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="main-container">
+    <!-- Sidebar Navigation -->
+    <div class="side-navigation">
+      <div class="logo"onclick="window.location.href='{{ url_for('loading_pcb') }}'">
+        <img src="{{ url_for('static', filename='/images/Vector.svg') }}" alt="Logo" class="nav-logo">
+      </div>
+    
+      <button class="nav-button active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      </button>
+     
+      <button class="nav-button" onclick="window.location.href='{{ url_for('profile') }}'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </button>
+      {% if current_user.is_authenticated and current_user.is_super_admin %}
+      <button class="nav-button" onclick="window.location.href='{{ url_for('admin_dashboard') }}'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <line x1="20" y1="8" x2="20" y2="14"></line>
+          <line x1="23" y1="11" x2="17" y2="11"></line>
+        </svg>
+      </button>
+      
+      <button class="nav-button"onclick="window.location.href='{{ url_for('analytic') }}'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      </button>
+      
+      <button class="nav-button" onclick="window.location.href='{{ url_for('setting') }}'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      {% endif %}
+  
+      <button class="nav-button"onclick="window.location.href='{{ url_for('logout') }}'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Header with Action Buttons -->
+    <header class="header">
+      <div class="action-buttons">
+        <button class="button button-tertiary" onclick="openDefectModal()">Verification</button>
+        <button class="button button-primary" id="start-inspection">Start Inspection</button>
+        <button class="button button-primary" id="next-panel">Next Panel</button>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <div class="content">
+      <!-- Status Panel -->
+      <div class="status-panel">
+        <div class="defect-status" id="checklist-item">Waiting For barcode found</div>
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-value" id="points">0%</div>
+            <div class="stat-label">Total Completion</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="checked-items">0</div>
+            <div class="stat-label">Items Checked</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="total-items">0</div>
+            <div class="stat-label">Time Spent</div>
+          </div>
+         
+        </div>
+        <div id="popup-container"></div>
+      </div>
+      
+      <!-- PCB Panel List -->
+      <div class="pcb-panel-container" id="pcb-panel-container">
+        <!-- PCB panels will be dynamically added here -->
+      </div>
+      
+      <!-- Detection View Panel -->
+      <div class="detection-view-panel">
+        <h2 class="detection-view-title">Detection View</h2>
+        <div class="image-display">
+          <img id="live_image" src="/placeholder.svg" style="display: none;">
+          <img id="staticImage" src="/placeholder.svg" style="display: block;">
+          <img id="inspection" src="/placeholder.svg">
+        </div>
+      </div>
+      
+      <!-- Defects Panel -->
+      <div class="defects-panel">
+        <h2 class="defects-title">Whole Panel Defects</h2>
+        <div class="defects-grid">
+          <div class="defect-card" onclick="showDefectImages('Capacitor_Color')">
+            <div class="defect-indicator color-1"></div>
+            <div class="defect-count color-1" id="Capacitor_ColorPoints">0</div>
+            <div class="defect-label">Capacitor Color</div>
+          </div>
+          
+          <div class="defect-card" onclick="showDefectImages('Bridge')">
+            <div class="defect-indicator color-2"></div>
+            <div class="defect-count color-2" id="bridgingShortPoints">0</div>
+            <div class="defect-label">Bridging / Short</div>
+          </div>
+          
+          <div class="defect-card" onclick="showDefectImages('IC_Direction')">
+            <div class="defect-indicator color-3"></div>
+            <div class="defect-count color-3" id="wrongPolarityPoints">0</div>
+            <div class="defect-label">Wrong Polarity</div>
+          </div>
+          
+          <div class="defect-card" onclick="showDefectImages('missing')">
+            <div class="defect-indicator color-4"></div>
+            <div class="defect-count color-4" id="missingComponentPoints">0</div>
+            <div class="defect-label">Missing Component</div>
+          </div>
+          
+          <div class="defect-card" onclick="showDefectImages('wrong_Values')">
+            <div class="defect-indicator color-5"></div>
+            <div class="defect-count color-5" id="Wrong_Values">0</div>
+            <div class="defect-label">Wrong Values</div>
+          </div>
+          
+          <div class="defect-card" onclick="showDefectImages('Shifted')">
+            <div class="defect-indicator color-1"></div>
+            <div class="defect-count color-1" id="ShiftedComponentsPoints">0</div>
+            <div class="defect-label">Shifted Components</div>
+          </div>
+
+          <div class="defect-card" onclick="showDefectImages('Dry_Solder')">
+            <div class="defect-indicator color-6"></div>
+            <div class="defect-count color-6" id="DrySolderComponent">0</div>
+            <div class="defect-label">Dry Solder</div>
+          </div>
+        </div>
+        
+        <div id="imageContainer" class="image-row-container" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loader -->
+  <div id="loader"></div>
+  
+  <!-- Defect Modal -->
+  <div id="defectModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Defect Verification</h3>
+        <button class="close-modal" onclick="closeDefectModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="defect-image-container">
+          <img id="modalDefectImage" src="/placeholder.svg" alt="Defect Image">
+        </div>
+        <div class="defect-options">
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="defectType1" name="defectType1">
+              <label for="defectType1">Missing Component</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="defectType2" name="defectType2">
+              <label for="defectType2">Wrong Polarity</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="defectType3" name="defectType3">
+              <label for="defectType3">Bridging/Short</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="defectType4" name="defectType4">
+              <label for="defectType4">Wrong Values</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="defectType5" name="defectType5">
+              <label for="defectType5">Shifted Component</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button true-defect-btn" onclick="saveDefect(true)">True Defection</button>
+        <button class="modal-button false-defect-btn" onclick="saveDefect(false)">False Defection</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Flash Messages Container -->
+  <div class="alert-popup" id="alert-popup"></div>
+  
+  <script>
+    // Global variables
+let isStreamStarted = false;
+let hasDisplayedBarcode = false;
+let currentPCB = "PCB_0";
+let currentPanel = "Panel_0";
+let panelData = {}; // Object to store all panel and PCB data
+let lastSelectedPCB = null; // Track the last selected PCB
+let lastSelectedPanel = null; // Track the last selected panel
+
+// Initialize when document is loaded
+document.addEventListener("DOMContentLoaded", function() {
+  fetchPCBData();
+  setInterval(fetchPCBData, 10000); // Periodically fetch PCB data every 10 seconds
+  autoStartStream(); // Auto-start stream when page loads
+  setInterval(checkStatusAndUpdateFrame, 200); // Run both status check & frame refresh every 200ms
+  
+  // Add a placeholder message
+  const checklistItemElement = document.getElementById("checklist-item");
+  if (checklistItemElement) {
+    checklistItemElement.textContent = "Select a PCB to view details";
+    checklistItemElement.style.background = "var(--accent-blue)";
+  }
+});
+
+// Function to auto-start stream
+function autoStartStream() {
+  fetch('/start-stream')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Stream started automatically');
+      isStreamStarted = true;
+    })
+    .catch(error => console.error('Error auto-starting stream:', error));
+}
+
+// Flags to track if the messages have been displayed
+let hasDisplayedAlignedMessage = false;  // Flag for "Image Is Aligned"
+let hasDisplayedBarcodeMessage = false; // Flag for "Barcode Is Found"
+
+function checkStatusAndUpdateFrame() {
+  Promise.all([
+    fetch('/status').then(res => res.json()),
+    fetch('/latest_frame').then(res => res.json())
+  ]).then(([statusData, frameData]) => {
+    const alignStatus = statusData.allign_status;
+    const isBarcodeScanned = statusData.is_barcode_scanned;
+    const startInspectionButton = document.getElementById('start-inspection');
+    const nextPanelButton = document.getElementById('next-panel');
+    const detectionViewTitle = document.querySelector('.detection-view-title');
+    const frameImg = document.getElementById('live_image');
+    const checklistItemElement = document.getElementById("checklist-item");
+    const inspection = document.getElementById('inspection');
+    const staticImage = document.getElementById('staticImage');
+    
+    // Only update status messages if no PCB is selected
+    if (!lastSelectedPCB) {
+      // Check if barcode is scanned and display message only once
+      if (isBarcodeScanned && !hasDisplayedBarcodeMessage) {
+        checklistItemElement.textContent = "Barcode Is Found";
+        checklistItemElement.style.background = "var(--accent-blue)";
+        hasDisplayedBarcodeMessage = true; // Set flag to prevent re-execution
+      } else if (!isBarcodeScanned && hasDisplayedBarcodeMessage) {
+        // If barcode is not scanned anymore, reset flag to allow showing message again when scanned
+        hasDisplayedBarcodeMessage = false;
+        checklistItemElement.textContent = "Barcode Found";
+        checklistItemElement.style.background = "var(--accent-red)";
+      }
+
+      // When both alignStatus and isBarcodeScanned are true, display "Image Is Aligned" message
+      if (isBarcodeScanned && alignStatus && !hasDisplayedAlignedMessage) {
+        checklistItemElement.textContent = "Image Is Aligned";
+        checklistItemElement.style.background = "var(--gradient-green)";
+        hasDisplayedAlignedMessage = true; // Set flag to prevent re-execution
+      } else if (!alignStatus && hasDisplayedAlignedMessage) {
+        // Reset flag if alignStatus is false to allow showing the message again when aligned
+        hasDisplayedAlignedMessage = false;
+      }
+    }
+
+    if (alignStatus) {
+      // Detection Mode
+      startInspectionButton.style.backgroundColor = 'var(--accent-green)';
+      detectionViewTitle.textContent = 'Detection Mode';
+      frameImg.style.display = 'none'; // Hide stream frame
+     
+      if (!hasDisplayedBarcodeMessage && !lastSelectedPCB) { // Ensure barcode message is displayed only once per true cycle
+        checklistItemElement.textContent = "Waiting For barcode found";
+        checklistItemElement.style.background = "var(--accent-red)";
+        hasDisplayedBarcodeMessage = false; // Reset flag if necessary
+      }
+    } else {
+      // Stream Mode
+      startInspectionButton.style.backgroundColor = 'var(--accent-red)';
+      detectionViewTitle.textContent = 'Stream Mode';
+
+      if (frameData.frame_url) {
+        frameImg.src = frameData.frame_url + '?t=' + new Date().getTime(); // Force reload
+        frameImg.style.display = 'block'; // Ensure it's visible
+        
+        if (!lastSelectedPCB) {
+          checklistItemElement.textContent = "Waiting For barcode found";
+        }
+        
+        if (inspection) inspection.src = '';
+        if (staticImage) staticImage.src = '';
+      }
+    }
+  }).catch(error => console.error('Error checking status or fetching frame:', error));
+}
+
+// Function to fetch data
+function fetchData() {
+  Promise.all([fetch('/status'), fetch('/get_image')])
+    .then(([statusResponse, imageResponse]) => Promise.all([statusResponse.json(), imageResponse.json()]))
+    .then(([statusData, imageData]) => {
+      const alignStatus = statusData.allign_status;
+      const isStreamActive = statusData.is_stream_active;
+      const startInspectionButton = document.getElementById('start-inspection');
+      const staticImage = document.getElementById('staticImage');
+      const liveImageElement = document.getElementById('live_image');
+      
+      // Handle the alignment status
+      if (!alignStatus) {
+        startInspectionButton.disabled = false;
+        startInspectionButton.style.backgroundColor = 'var(--accent-red)';
+      } else {
+        startInspectionButton.disabled = false;
+        startInspectionButton.style.backgroundColor = 'var(--accent-green)';
+      }
+      
+      // Update live image if available and stream mode is active
+      if (isStreamActive && isStreamStarted && imageData.image) {
+        liveImageElement.src = 'data:image/png;base64,' + imageData.image;
+      }
+    })
+    .catch(error => console.error('Error fetching status or image:', error));
+}
+    
+// Handle start inspection button click
+document.getElementById('start-inspection').addEventListener('click', function() {
+  const loader = document.getElementById('loader');
+  const staticImage = document.getElementById('staticImage');
+  const liveImageElement = document.getElementById('live_image');
+  const detectionViewTitle = document.querySelector('.detection-view-title');
+  
+  // Show loader
+ 
+  
+  // Start inspection process
+  fetch('/start_inspection')
+    .then(response => response.json())
+    .then(data => {
+      console.log("Inspection started!");
+      
+      // Hide loader and switch to static image after 4 seconds
+      setTimeout(() => {
+        loader.classList.remove('active');
+        staticImage.style.display = 'block';
+        liveImageElement.style.display = 'none';
+        detectionViewTitle.textContent = 'Detection View';
+        isStreamStarted = false; // Stop the live stream
+      }, 4000);
+    })
+    .catch(error => {
+      console.error('Error starting inspection:', error);
+      loader.classList.remove('active');
+    });
+});
+
+// Handle next panel button click
+document.getElementById('next-panel').addEventListener('click', function() {
+  // Start next process
+  fetch('/next_panel')
+    .then(response => response.json())
+    .then(data => {
+      console.log("Next Panel loaded");
+    })
+    .catch(error => {
+      console.error('Error loading next panel:', error);
+    });
+});
+  
+// Function to open the defect modal
+function openDefectModal() {
+  const modal = document.getElementById('defectModal');
+  const modalImage = document.getElementById('modalDefectImage');
+  const staticImage = document.getElementById('staticImage');
+  const inspection = document.getElementById('inspection');
+  
+  // Set the image in the modal
+  if (staticImage && staticImage.src && staticImage.src !== '/placeholder.svg' && staticImage.style.display !== 'none') {
+    modalImage.src = staticImage.src;
+  } else if (inspection && inspection.src && inspection.src !== '/placeholder.svg' && inspection.style.display !== 'none') {
+    modalImage.src = inspection.src;
+  } else {
+    alert("No image available to save. Please select an image first.");
+    return;
+  }
+  
+  // Reset checkboxes
+  const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  
+  // Show the modal
+  modal.style.display = 'flex';
+}
+
+// Function to close the defect modal
+function closeDefectModal() {
+  const modal = document.getElementById('defectModal');
+  modal.style.display = 'none';
+}
+
+// Function to save defect
+function saveDefect(isTrue) {
+  // Get the selected defect types
+  const defectTypes = [];
+  const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]:checked');
+
+  checkboxes.forEach(checkbox => {
+    defectTypes.push(checkbox.nextElementSibling.textContent.trim());
+  });
+
+  if (defectTypes.length === 0) {
+    alert("Please select at least one defect type.");
+    return;
+  }
+
+  // Get the image element
+  const modalImage = document.getElementById('modalDefectImage');
+  if (!modalImage) {
+    alert("Image not found.");
+    return;
+  }
+
+  // Create canvas and draw image for base64
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = modalImage.naturalWidth;
+  canvas.height = modalImage.naturalHeight;
+  ctx.drawImage(modalImage, 0, 0);
+
+  // Convert to base64
+  const base64Data = canvas.toDataURL('image/jpeg');
+
+  // Prepare data to send
+  const data = {
+    imageData: base64Data,
+    defectType: defectTypes.join(', '),
+    confidence: isTrue ? 1.0 : 0.0,
+    remarks: isTrue ? "True defection" : "False defection",
+    panel: currentPanel || "Unknown",
+    pcb: currentPCB || "Unknown",
+    timestamp: new Date().toISOString()
+  };
+
+  // Send data to backend
+  fetch('/save-image', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    showAlert(result.message || "Defect saved successfully!");
+    closeDefectModal();
+  })
+  .catch(error => {
+    console.error('Error saving defect:', error);
+    showAlert("Error saving defect. Please try again.");
+  });
+}
+
+// Function to show alert
+function showAlert(message) {
+  const alertPopup = document.getElementById('alert-popup');
+  alertPopup.textContent = message;
+  alertPopup.style.display = 'block';
+  
+  setTimeout(() => {
+    alertPopup.style.display = 'none';
+  }, 3000);
+}
+
+// Function to fetch PCB data - MODIFIED to not automatically fetch defect data
+async function fetchPCBData() {
+  try {
+    const response = await fetch('/get_defects');
+    const data = await response.json();
+    console.log('Fetched PCB data:', data);
+    
+    // Get all available panels and PCBs
+    if (data.Panel && data.PCB) {
+      // Update the panel data structure
+      const panel = data.Panel;
+      const pcb = data.PCB;
+      const pcbNumber = parseInt(pcb.split('_')[1], 10);
+      
+      if (!panelData[panel]) {
+        panelData[panel] = [];
+      }
+      
+      // Add the PCB to the panel if it doesn't exist
+      if (!panelData[panel].includes(pcbNumber)) {
+        panelData[panel].push(pcbNumber);
+        // Sort PCB numbers in ascending order
+        panelData[panel].sort((a, b) => a - b);
+      }
+    }
+    
+    // Update the UI with the panel data
+    updatePanelUI();
+    
+    // IMPORTANT: Do NOT fetch defect data automatically
+    // Only fetch data if this is the currently selected PCB
+    if (lastSelectedPanel === data.Panel && lastSelectedPCB === data.PCB) {
+      fetchDefectData(lastSelectedPanel, lastSelectedPCB);
+    }
+    
+  } catch (error) {
+    console.error('Error fetching PCB data:', error);
+  }
+}
+
+// Function to update the panel UI
+function updatePanelUI() {
+  const container = document.getElementById('pcb-panel-container');
+  if (!container) {
+    console.error('PCB panel container not found');
+    return;
+  }
+  
+  container.innerHTML = ''; // Clear existing content
+  
+  // Create sections for each panel
+  Object.keys(panelData).forEach(panel => {
+    // Create panel section
+    const panelSection = document.createElement('div');
+    panelSection.className = 'panel-section';
+    
+    // Create panel title
+    const panelTitle = document.createElement('h3');
+    panelTitle.className = 'panel-title';
+    panelTitle.textContent = `Panel: ${panel}`;
+    panelSection.appendChild(panelTitle);
+    
+    // Create PCB panels for this section
+    panelData[panel].forEach(pcbNumber => {
+      const pcbId = `PCB_${pcbNumber}`;
+      const panelElement = document.createElement('div');
+      panelElement.className = 'pcb-panel';
+      
+      // Mark the PCB as active only if it was previously selected
+      if (lastSelectedPanel === panel && lastSelectedPCB === pcbId) {
+        panelElement.classList.add('active');
+      }
+      
+      const label = document.createElement('span');
+      label.className = 'pcb-panel-label';
+      label.textContent = `PCB ${pcbNumber}`;
+      
+      panelElement.appendChild(label);
+      panelSection.appendChild(panelElement);
+      
+      panelElement.addEventListener('click', () => {
+        setPCBValue(panel, pcbNumber);
+      });
+    });
+    
+    container.appendChild(panelSection);
+  });
+}
+
+// Function to set PCB value when a PCB panel is clicked
+function setPCBValue(panel, pcbNumber) {
+  // Remove active class from all panels
+  document.querySelectorAll('.pcb-panel').forEach(panelElement => {
+    panelElement.classList.remove('active');
+  });
+  
+  // Find the clicked panel element and add active class
+  const panelElements = document.querySelectorAll('.pcb-panel');
+  for (let i = 0; i < panelElements.length; i++) {
+    const label = panelElements[i].querySelector('.pcb-panel-label');
+    if (label && label.textContent === `PCB ${pcbNumber}`) {
+      panelElements[i].classList.add('active');
+      break;
+    }
+  }
+  
+  // Set the current panel and PCB
+  currentPanel = panel;
+  currentPCB = `PCB_${pcbNumber}`;
+  
+  // Update the last selected PCB and panel
+  lastSelectedPanel = panel;
+  lastSelectedPCB = `PCB_${pcbNumber}`;
+  
+  console.log(`Panel set to ${currentPanel}, PCB value set to ${currentPCB}`);
+  
+  // Show loading indicator if you have one
+  const checklistItemElement = document.getElementById("checklist-item");
+  if (checklistItemElement) {
+    checklistItemElement.textContent = "Loading PCB data...";
+    checklistItemElement.style.background = "var(--accent-blue)";
+  }
+  
+  // Fetch data for this PCB
+  fetchDefectData(currentPanel, currentPCB);
+  
+  // Clear any displayed defect images
+  const imageContainer = document.getElementById('imageContainer');
+  if (imageContainer) {
+    imageContainer.style.display = 'none';
+  }
+}
+
+// Function to fetch defect data
+async function fetchDefectData(panel, pcb) {
+  try {
+    // Fetch defects.json
+    const defectsResponse = await fetch(`/results/${panel}/${pcb}/defects.json`);
+    const defectsData = await defectsResponse.json();
+    console.log('Fetched defect data:', defectsData);
+    
+    // Fetch details.json
+    const detailsResponse = await fetch(`/results/${panel}/${pcb}/details.json`);
+    const detailsData = await detailsResponse.json();
+    console.log('Fetched detail data:', detailsData);
+    
+    // Save both defects and details data in the backend
+    savePCBData(defectsData, detailsData);
+    
+    // Display the defect data on the frontend
+    displayDefectData(defectsData);
+    
+    // Update content with the details data
+    updateContent(detailsData);
+    
+    // Update the image
+    updateImage(panel, pcb);
+    
+  } catch (error) {
+    console.error('Error fetching defect data:', error);
+    
+    // Show error message
+    const checklistItemElement = document.getElementById("checklist-item");
+    if (checklistItemElement) {
+      checklistItemElement.textContent = "Error loading PCB data";
+      checklistItemElement.style.background = "var(--accent-red)";
+    }
+  }
+}
+
+// Function to update the image
+function updateImage(panel, pcb) {
+  const inspection = document.getElementById("inspection");
+  const staticImage = document.getElementById("staticImage");
+  const liveImage = document.getElementById("live_image");
+  
+  if (inspection) {
+    inspection.src = `/result/${panel}/${pcb}/pcb.png`;
+    inspection.style.display = 'block';
+    console.log("Inspection image updated to:", inspection.src);
+    
+    // Hide other images
+    if (staticImage) staticImage.style.display = 'none';
+    if (liveImage) liveImage.style.display = 'none';
+  } else {
+    console.error("Inspection image element not found.");
+  }
+}
+
+// Function to save PCB data
+async function savePCBData(defects, details) {
+  try {
+    const response = await fetch('/save_pcb_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        panel: currentPanel,
+        pcb: currentPCB,
+        defects: defects,
+        details: details
+      })
+    });
+    
+    const result = await response.json();
+    console.log("Data saved:", result);
+  } catch (error) {
+    console.error("Error saving PCB data:", error);
+  }
+}
+
+// Function to display defect data
+function displayDefectData(data) {
+  const defectMapping = {
+    "wrong_Values": "Wrong_Values",
+    "Capacitor_Color": "Capacitor_ColorPoints",
+    "Bridge": "bridgingShortPoints",
+    "IC_Direction": "wrongPolarityPoints",
+    "missing": "missingComponentPoints",
+    "Shifted": "ShiftedComponentsPoints",
+    "Dry_Solder": "DrySolderComponent"
+  };
+  
+  // Reset all counters to 0
+  Object.values(defectMapping).forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.innerText = "0";
+    }
+  });
+  
+  // Update with actual values
+  if (data.defects && Array.isArray(data.defects)) {
+    data.defects.forEach(defect => {
+      const type = defect.defect_type;
+      const count = defect.count;
+      const pointsElementId = defectMapping[type];
+      const element = document.getElementById(pointsElementId);
+      
+      if (element) {
+        element.innerText = count;
+      }
+    });
+  }
+}
+
+// Function to update content
+function updateContent(data) {
+  const checklistItemElement = document.getElementById("checklist-item");
+  if (!checklistItemElement) {
+    console.error("Checklist item element not found");
+    return;
+  }
+  
+  checklistItemElement.textContent = data.defectFound && data.defectFound !== "" 
+    ? `Defect in ${data.checklistItem || "Unknown"}` 
+    : "No Defect";
+  
+  const pointsElement = document.getElementById("points");
+  if (pointsElement) pointsElement.textContent = data.points || "0%";
+  
+  const checkedItemsElement = document.getElementById("checked-items");
+  if (checkedItemsElement) checkedItemsElement.textContent = data.checkedItems || "0";
+  
+  const totalItemsElement = document.getElementById("total-items");
+  if (totalItemsElement) totalItemsElement.textContent = data.totalItems || "0";
+  
+  if (data.defectFound && data.defectFound !== "") {
+    checklistItemElement.style.background = "var(--gradient-red)";
+    checklistItemElement.classList.remove("no-defect");
+  } else {
+    checklistItemElement.style.background = "var(--gradient-green)";
+    checklistItemElement.classList.add("no-defect");
+  }
+}
+
+// Function to show defect images
+function showDefectImages(defectType) {
+  const imageContainer = document.getElementById('imageContainer');
+  const staticImage = document.getElementById('staticImage');
+  const liveImage = document.getElementById('live_image');
+  const inspection = document.getElementById('inspection');
+  
+  if (!imageContainer) {
+    console.error("Image container not found");
+    return;
+  }
+  
+  if (!defectType) {
+    imageContainer.style.display = 'none';
+    return;
+  }
+  
+  fetch(`/results/${currentPanel}/${currentPCB}/defects.json`)
+    .then(response => response.json())
+    .then(data => {
+      const defect = data.defects.find(d => d.defect_type === defectType);
+      
+      if (defect && defect.data && defect.data.length > 0) {
+        imageContainer.innerHTML = '';
+        if (liveImage) liveImage.style.display = 'none';
+        if (inspection) inspection.style.display = 'none';
+        if (staticImage) staticImage.style.display = 'none';
+        
+        defect.data.forEach(item => {
+          const imageWrapper = document.createElement('div');
+          imageWrapper.classList.add('image-wrapper');
+          
+          const image = document.createElement('img');
+          image.src = `data:image/jpeg;base64,${item.image}`;
+          image.alt = `Component: ${item.Component}`;
+          image.classList.add('defect-image');
+          imageWrapper.appendChild(image);
+          
+          const componentName = document.createElement('div');
+          componentName.classList.add('component-name');
+          componentName.innerText = `Component: ${item.Component}`;
+          imageWrapper.appendChild(componentName);
+          
+          imageContainer.appendChild(imageWrapper);
+          
+          image.addEventListener('click', () => {
+            if (staticImage) {
+              staticImage.src = image.src;
+              staticImage.style.display = 'block';
+              if (inspection) inspection.style.display = 'none';
+            }
+          });
+        });
+        
+        imageContainer.style.display = 'flex';
+      } else {
+        imageContainer.style.display = 'none';
+        if (inspection) inspection.style.display = 'block';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching defect data for images:', error);
+      imageContainer.style.display = 'none';
+      if (inspection) inspection.style.display = 'block';
+    });
+}
+
+// Function to download and save the current image
+function downloadImage() {
+  openDefectModal();
+}
+
+// Continuously check status and fetch image every second
+setInterval(fetchData, 1000);
+
+// Add event listener for the "Download & Save" button
+document.addEventListener('DOMContentLoaded', function() {
+  const downloadButton = document.querySelector('.button-tertiary');
+  if (downloadButton) {
+    downloadButton.addEventListener('click', downloadImage);
+  }
+});
+  </script>
+<script>
+  let wasScannedBefore = false;
+  let popupActive = false;
+  let timerInterval = null;
+  let timerStartTime = null;
+  let currentPopup = null;
+  let alignmentComplete = false;
+  let lastPcbCounter = null;
+  
+  async function checkBarcodeStatus() {
+      try {
+          const response = await fetch('/config_status');
+          const data = await response.json();
+  
+          const isScanned = data.is_barcode_scanned;
+          const pcbCounter = data.pcb_counter || 0;
+          const templatePcbsCount = data.template_pcbs_count || 3;
+  
+          // Handle the case when barcode scan status changes from true to false
+          if (!isScanned && wasScannedBefore) {
+            console.log("Alignment Process Reset")
+              resetAlignmentProcess();
+          }
+          const counterReset = lastPcbCounter !== null && pcbCounter < lastPcbCounter;
+          // Start timer when barcode is first scanned or when it becomes true again after being false
+          // if (isScanned && (!wasScannedBefore || (wasScannedBefore && !popupActive))) {
+           if (isScanned && (!wasScannedBefore || (wasScannedBefore && !popupActive && !alignmentComplete))) {
+          //if (isScanned && (!wasScannedBefore || (wasScannedBefore && (!popupActive || counterReset)))) {
+              popupActive = true;
+              alignmentComplete = false;
+              startAlignmentProcess(templatePcbsCount);
+              console.log("Alignment Process Started")
+          }
+  
+          // If barcode is scanned and popup is active, update the alignment status
+          if (isScanned && popupActive) {
+            console.log("Alignment Process Updated")
+              updateAlignmentStatus(pcbCounter, templatePcbsCount);
+          }
+  
+          wasScannedBefore = isScanned;
+          lastPcbCounter = pcbCounter;
+      } catch (err) {
+          console.error('Error checking config:', err);
+      }
+  }
+  
+  function resetAlignmentProcess() {
+      // Clear timer
+      if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+      }
+      
+      // Reset variables
+      timerStartTime = null;
+      
+      // *** ADD THIS LINE ***
+      
+      // Hide popup if it exists
+      if (currentPopup) {
+          currentPopup.remove();
+          currentPopup = null;
+      }
+      
+      alignmentComplete = false; // Reset the completion flag here.
+      popupActive = false;
+  }
+  
+  function startAlignmentProcess(templatePcbsCount) {
+      const container = document.getElementById("popup-container");
+      currentPopup = document.createElement("div");
+      currentPopup.className = "custom-popup";
+      container.appendChild(currentPopup);
+  
+      // Show initial message
+      currentPopup.innerHTML = `<h2>Preparing for alignment...</h2>`;
+      
+      // Add progress bar container
+      const progressContainer = document.createElement("div");
+      progressContainer.className = "progress-container";
+      progressContainer.style.width = "100%";
+      progressContainer.style.backgroundColor = "#e0e0e0";
+      progressContainer.style.borderRadius = "4px";
+      progressContainer.style.margin = "10px 0";
+      progressContainer.style.overflow = "hidden";
+      
+      // Add progress bar
+      const progressBar = document.createElement("div");
+      progressBar.id = "alignment-progress";
+      progressBar.style.width = "0%";
+      progressBar.style.height = "20px";
+      progressBar.style.backgroundColor = "#4CAF50";
+      progressBar.style.textAlign = "center";
+      progressBar.style.lineHeight = "20px";
+      progressBar.style.color = "white";
+      progressBar.style.transition = "width 0.5s ease-in-out";
+      
+      // Add percentage text
+      const percentText = document.createElement("span");
+      percentText.id = "progress-percent";
+      percentText.textContent = "0%";
+      progressBar.appendChild(percentText);
+      
+      // Assemble progress bar
+      progressContainer.appendChild(progressBar);
+      currentPopup.appendChild(progressContainer);
+      
+      // Start the timer
+      timerStartTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+      
+      // Add timer display
+      const timerEl = document.createElement("div");
+      timerEl.id = "countdown-timer";
+      timerEl.style.marginTop = "10px";
+      currentPopup.appendChild(timerEl);
+  }
+  
+  function updateTimer() {
+      if (!timerStartTime) return;
+      
+      const elapsedSeconds = Math.floor((Date.now() - timerStartTime) / 1000);
+      const timerEl = document.getElementById("countdown-timer");
+      if (timerEl) {
+          timerEl.textContent = `⏳ ${elapsedSeconds}s`;
+      }
+  }
+  
+  function updateProgressBar(pcbCounter, templatePcbsCount) {
+      const progressBar = document.getElementById("alignment-progress");
+      const percentText = document.getElementById("progress-percent");
+      
+      if (!progressBar || !percentText) return;
+      
+      // Calculate percentage (handle case where templatePcbsCount is 0 to avoid division by zero)
+      const percentage = templatePcbsCount > 0 ? Math.min(100, Math.round((pcbCounter / templatePcbsCount) * 100)) : 0;
+      
+      // Update progress bar width and text
+      progressBar.style.width = `${percentage}%`;
+      percentText.textContent = `${percentage}%`;
+      
+      // Change color based on progress
+      if (percentage < 30) {
+          progressBar.style.backgroundColor = "#FF9800"; // Orange for low progress
+      } else if (percentage < 70) {
+          progressBar.style.backgroundColor = "#2196F3"; // Blue for medium progress
+      } else {
+          progressBar.style.backgroundColor = "#4CAF50"; // Green for high progress
+      }
+  }
+  
+  function updateAlignmentStatus(pcbCounter, templatePcbsCount) {
+      if (!currentPopup) return;
+      
+      // Update progress bar
+      updateProgressBar(pcbCounter, templatePcbsCount);
+      
+      // Update the message based on current pcbCounter
+      const messageEl = currentPopup.querySelector("h2");
+      if (messageEl) {
+          if (pcbCounter === 0) {
+              messageEl.textContent = "Waiting for first image alignment...";
+          } else if (pcbCounter < templatePcbsCount) {
+              messageEl.textContent = `${pcbCounter} Image${pcbCounter > 1 ? 's' : ''} aligned. Waiting for next alignment...`;
+              
+              // Optional: Add the PCB flipping question if needed
+              if (pcbCounter === 2 && templatePcbsCount >= 4 && !currentPopup.querySelector("button")) {
+                  const yesBtn = document.createElement("button");
+                  yesBtn.textContent = "Yes, I'm flipping the PCB";
+                  yesBtn.onclick = () => {
+                      yesBtn.remove();
+                  };
+                  currentPopup.appendChild(yesBtn);
+              }
+          } else if (pcbCounter >= templatePcbsCount) {
+              // All images aligned - complete the process
+              messageEl.textContent = `✅ All ${templatePcbsCount} images aligned. Now ready for Inspection!`;
+              
+              // Stop the timer when pcbCounter equals templatePcbsCount
+              if (timerInterval) {
+                  clearInterval(timerInterval);
+                  timerInterval = null;
+              }
+              
+              // Mark alignment as complete
+              alignmentComplete = true;
+              wasScannedBefore = true;
+              // Hide popup after showing completion message briefly
+              setTimeout(() => {
+                  if (currentPopup) {
+                      currentPopup.remove();
+                      currentPopup = null;
+                      popupActive = false;
+                  }
+              }, 3000); // Show completion message for 3 seconds before hiding
+          }
+      }
+  }
+  
+  // Check status every 2 seconds
+  setInterval(checkBarcodeStatus, 2000);
+</script>
+</body>
+</html>
