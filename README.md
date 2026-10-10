@@ -97,31 +97,105 @@ Deployment:
 
 ```
 rapidev_production/
-├── app.py                    # Main Flask application
-├── barcode/                  # Barcode reading utilities
+├── app.py                         # Main Flask application
+├── inspection.py                  # Inspection logic
+├── working_main.py                # Alternative main entry point
+├── data_push.py                   # Data management utility
+├── test.py                        # Testing module
+├── run.sh                         # Shell script runner
+│
+├── barcode/                       # Barcode reading utilities
 │   └── basic_bc_read.py
-├── configs/                  # Configuration files
-│   ├── config.json          # Active configuration
-│   ├── config_template.json
-│   ├── status.json
-│   └── template_**/          # 8+ PCB templates with:
-│       ├── annotations.json
-│       ├── camera_landmarks.xml
-│       ├── classifier_config.json
-│       └── comp_ocr_value.json
-├── templates/               # Jinja2 HTML templates
-│   ├── home.html
-│   ├── admin_dashboard.html
-│   ├── analytic.html
-│   ├── loading_pcb.html
-│   ├── login.html
-│   └── ...
-├── static/                  # Static assets
-│   ├── images/
-│   ├── uploads/            # User profile images
-│   ├── defect_images/      # Captured defect images
-│   └── ...
-└── pcb_data/               # JSON exports of inspections
+│
+├── source/                        # Core application modules
+│   ├── alignment.py              # PCB alignment logic
+│   ├── barcode.py                # Barcode processing
+│   ├── camera.py                 # Camera integration
+│   ├── color_detection.py        # Color-based detection
+│   ├── config.py                 # Configuration management
+│   ├── edit_template.py          # Template editing
+│   ├── experiment.py             # Experimental features
+│   ├── loggers.py                # Logging utilities
+│   ├── old_camera.py             # Legacy camera code
+│   ├── pytesseract_working.py    # OCR functionality
+│   ├── utils.py                  # Utility functions
+│   └── video_recorder.py         # Video recording
+│
+├── core/                         # Core system modules
+│   ├── settings.py               # System settings
+│   ├── template_count.py         # Template counter
+│   ├── template_switch.py        # Template switching logic
+│   └── __init__.py
+│
+├── Yolo/                         # YOLO v8 detection
+│   └── yolo.py                   # YOLO model integration
+│
+├── NN/                           # Neural Network models
+│   └── [ML models]
+│
+├── template_creator/             # Template creation tools
+│   └── [Template generation scripts]
+│
+├── tools/                        # Utility tools
+│   └── [Helper scripts]
+│
+├── configs/                      # Configuration files & Templates
+│   ├── config.json              # Active configuration
+│   ├── config_template.json     # Configuration template
+│   ├── status.json              # System status
+│   ├── classifier_config_PW881-CD_old.json
+│   ├── templates_info.txt       # Template information
+│   │
+│   └── template_**/             # 9 PCB template folders
+│       ├── template_single/
+│       ├── template_PW881-CD/
+│       ├── template_cfr_circle/
+│       ├── template_cfr_rect/
+│       ├── template_cfd_rect/
+│       ├── template_pd/
+│       ├── template_red/
+│       ├── template_square/
+│       └── template_west_lu/
+│           ├── annotations.json
+│           ├── camera_landmarks.xml
+│           ├── classifier_config.json
+│           └── comp_ocr_value.json
+│
+├── templates/                   # Jinja2 HTML templates
+│   ├── login.html               # User login page
+│   ├── home.html                # Dashboard home
+│   ├── admin_dashboard.html     # Admin control panel
+│   ├── add_user.html            # Add user form
+│   ├── update_user.html         # Update user form
+│   ├── profile.html             # User profile
+│   ├── analytic.html            # Analytics dashboard
+│   ├── loading_pcb.html         # Loading screen
+│   ├── inspection_view.html     # Inspection interface
+│   ├── defect_history.html      # Defect history view
+│   ├── history.html             # User history
+│   ├── setting.html             # System settings
+│   ├── 404.html                 # 404 error page
+│   ├── 500.html                 # 500 error page
+│   └── index.html               # Index/main page
+│
+├── static/                      # Static assets
+│   ├── images/                  # Logo & icons
+│   ├── uploads/                 # User profile images
+│   ├── defect_images/           # Captured defect images
+│   └── test/                    # Test assets
+│
+├── pcb_data/                    # JSON exports of inspections
+│   ├── defects_*.json           # Defect data exports
+│   └── details_*.json           # Inspection details
+│
+├── migrations/                  # Database migrations
+│   └── [SQLAlchemy migration files]
+│
+├── instance/                    # Instance-specific files
+│   └── database.db              # SQLite database
+│
+└── .git/                        # Git repository
+    └── [Git objects & history]
 ```
 
 ---
